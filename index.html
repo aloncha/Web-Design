@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="assets/orbit-strap.webp">
-<link rel="preload" as="image" href="assets/orbit-head.webp">
+<link rel="preload" as="image" href="assets/orbit-strap-graphite.webp">
+<link rel="preload" as="image" href="assets/orbit-head-graphite.webp">
 <style>
   :root {
     --bg: #ffffff;
@@ -19,496 +19,1302 @@
     --muted: #6e6e73;
     --graphite: #3a3a3c;
     --graphite-hover: #1d1d1f;
-    --line: #e8e8ed;
+    --line: #e5e5ea;
     --surface: #f5f5f7;
     --ring: #0071e3;
-    --shadow: rgba(0, 0, 0, .16);
     --ease: cubic-bezier(.22, 1, .36, 1);
-    --gutter: clamp(20px, 5vw, 72px);
-    /* hanging watch geometry */
-    --watch-h: 104svh;
-    --watch-top: -12svh;
-    --watch-x: 62%;
-    /* colour row geometry */
-    --card-w: min(24vw, 31svh);
-    --gap-pct: 118;
+    --gutter: clamp(16px, 5vw, 72px);
+    --maxw: 1180px;
+    --radius: 28px;
     color-scheme: light;
   }
-
   *, *::before, *::after { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
+  html:not(.motion) { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html:not(.motion) { scroll-behavior: auto; } }
   body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--fg);
+    margin: 0; background: var(--bg); color: var(--fg);
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
-    font-size: 17px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
+    font-size: 17px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    overflow-x: clip;
   }
   img { display: block; max-width: 100%; height: auto; }
   a { color: inherit; }
+  h1, h2, h3 { margin: 0; }
+  p { margin: 0; }
+  .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .icon { width: 28px; height: 28px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 
   .skip {
-    position: absolute; left: 16px; top: -60px; z-index: 100;
-    padding: 10px 16px; border-radius: 999px;
-    background: var(--fg); color: #fff; text-decoration: none; font-weight: 500;
-    transition: transform .2s var(--ease);
+    position: absolute; left: 16px; top: -64px; z-index: 100; padding: 10px 16px; border-radius: 999px;
+    background: var(--fg); color: #fff; text-decoration: none; font-weight: 500; transition: transform .2s var(--ease);
   }
-  .skip:focus { transform: translateY(76px); }
+  .skip:focus { transform: translateY(80px); }
   :focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; border-radius: 8px; }
 
-  /* ---------- Nav ---------- */
-  .nav {
-    position: fixed; inset: 0 0 auto; z-index: 50;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 52px; padding: 0 var(--gutter);
-    background: rgba(255, 255, 255, .78);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    backdrop-filter: saturate(180%) blur(20px);
-    border-bottom: 1px solid rgba(0, 0, 0, .06);
-  }
-  .brand {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-weight: 600; font-size: 17px; letter-spacing: -.01em; text-decoration: none;
-  }
-  .brand svg { width: 20px; height: 20px; }
-  .nav-right { display: flex; align-items: center; gap: 8px; }
-  .lang {
-    display: inline-flex; padding: 3px; border-radius: 999px; background: var(--surface);
-  }
-  .lang button {
-    min-width: 44px; min-height: 32px; padding: 0 10px;
-    border: 0; border-radius: 999px; background: transparent;
-    font: inherit; font-size: 13px; font-weight: 500; color: var(--muted);
-    cursor: pointer; touch-action: manipulation;
-    transition: background-color .2s var(--ease), color .2s var(--ease);
-  }
-  .lang button[aria-pressed="true"] { background: #fff; color: var(--fg); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
-  .nav-buy { min-height: 32px; padding: 0 16px; font-size: 13px; }
-
-  /* ---------- Buttons ---------- */
+  /* ---------- Buttons & toggles ---------- */
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    min-height: 44px; padding: 0 22px; border-radius: 999px;
-    background: var(--graphite); color: #fff;
-    font-weight: 500; font-size: 15px; text-decoration: none; white-space: nowrap;
-    cursor: pointer; touch-action: manipulation;
+    min-height: 44px; padding: 0 22px; border-radius: 999px; border: 0;
+    background: var(--graphite); color: #fff; font: inherit; font-weight: 500; font-size: 15px;
+    text-decoration: none; white-space: nowrap; cursor: pointer; touch-action: manipulation;
     transition: background-color .2s var(--ease), transform .2s var(--ease);
   }
   .btn:hover { background: var(--graphite-hover); }
   .btn:active { transform: scale(.97); }
+  .btn-sm { min-height: 32px; padding: 0 14px; font-size: 13px; }
   .btn-lg { min-height: 56px; padding: 0 34px; font-size: 17px; }
+  .lang { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--surface); }
+  .lang button {
+    min-width: 44px; min-height: 32px; padding: 0 10px; border: 0; border-radius: 999px; background: transparent;
+    font: inherit; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; touch-action: manipulation;
+    transition: background-color .2s var(--ease), color .2s var(--ease);
+  }
+  .lang button[aria-pressed="true"] { background: #fff; color: var(--fg); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  .tbd {
+    display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--surface);
+    color: var(--muted); font-size: .8em; font-weight: 500; letter-spacing: .02em; vertical-align: .1em;
+  }
 
-  /* ---------- Story stage ---------- */
+  /* ---------- Local nav (appears after hero) ---------- */
+  .lnav {
+    position: fixed; inset: 0 0 auto; z-index: 60; height: 52px;
+    background: rgba(255,255,255,.8); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(0,0,0,.07);
+    transform: translateY(-100%); opacity: 0; visibility: hidden;
+    transition: transform .5s var(--ease), opacity .35s var(--ease), visibility 0s linear .5s;
+  }
+  .lnav.show { transform: none; opacity: 1; visibility: visible; transition-delay: 0s; }
+  .lnav-in { display: flex; align-items: center; gap: 24px; height: 100%; max-width: calc(var(--maxw) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+  .lnav-title { font-weight: 600; font-size: 19px; letter-spacing: -.02em; text-decoration: none; margin-right: auto; }
+  .lnav-links { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; font-size: 13px; }
+  .lnav-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); text-decoration: none; transition: color .2s; }
+  .lnav-links a:hover { color: var(--fg); }
+  .lnav-right { display: flex; align-items: center; gap: 10px; }
+
+  /* ---------- Story stage (hero → roll → colours) ---------- */
   .story { position: relative; }
-  .stage {
-    position: relative; height: 100svh; min-height: 560px; overflow: hidden;
-    background: var(--bg);
+  .stage { position: relative; height: 100svh; min-height: 580px; overflow: hidden; background: var(--bg); }
+  .stage-top {
+    position: absolute; inset: 0 0 auto; z-index: 5; height: 64px;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 var(--gutter);
+  }
+  .brand { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 600; font-size: 17px; letter-spacing: -.01em; text-decoration: none; }
+  .brand svg { width: 20px; height: 20px; }
+
+  .hero-copy { position: absolute; z-index: 4; left: var(--gutter); top: 50%; transform: translateY(-50%); max-width: 40vw; }
+  .eyebrow { margin-bottom: 14px; font-size: 15px; font-weight: 600; color: #b25e09; letter-spacing: .01em; }
+  .hero-title { font-size: clamp(64px, 10.5vw, 168px); line-height: .92; font-weight: 700; letter-spacing: -.055em; }
+  .hero-tag { margin-top: 22px; max-width: 17ch; font-size: clamp(21px, 2.3vw, 34px); line-height: 1.16; font-weight: 600; letter-spacing: -.022em; color: var(--graphite); text-wrap: balance; }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-fade > * { animation: rise 1.1s var(--ease) both; }
+    .hero-fade > :nth-child(2) { animation-delay: .12s; }
+    .hero-fade > :nth-child(3) { animation-delay: .24s; }
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+
+  .gl { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; pointer-events: none; opacity: 0; transition: opacity .3s linear; }
+  .gl.ready { opacity: 1; }
+  .shadows { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+  .shadow {
+    position: absolute; left: 0; top: 0; width: 100px; height: 24px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(0,0,0,.55), rgba(0,0,0,.18) 55%, transparent);
+    opacity: 0; transform-origin: 0 0;
   }
 
-  .hero-copy {
-    position: absolute; z-index: 3;
-    left: var(--gutter); top: 50%; transform: translateY(-50%);
-    max-width: 34vw;
+  /* DOM watch: first paint + no-WebGL fallback (16 chained strap slices) */
+  .dws { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+  .dw { position: absolute; left: 0; top: 0; width: 360px; height: 1384px; transform-origin: 180px 0; }
+  .dws.hidden { visibility: hidden; }
+  .dw-strap { position: absolute; left: 0; top: 0; width: 360px; height: 881px; perspective: 1400px; transform-style: preserve-3d; }
+  .dw-slice {
+    position: absolute; left: 0; bottom: 0; width: 360px; height: calc(881px / 16 + 1px); /* 1px overlap hides seams */
+    background-repeat: no-repeat; background-size: 360px 881px;
+    transform-origin: 50% 100%; transform-style: preserve-3d; backface-visibility: visible;
   }
-  .eyebrow {
-    margin: 0 0 12px; font-size: 15px; font-weight: 500; color: var(--muted); letter-spacing: .01em;
-  }
-  .hero-title {
-    margin: 0; font-size: clamp(64px, 11vw, 168px); line-height: .92;
-    font-weight: 700; letter-spacing: -.055em;
-  }
-  .hero-tag {
-    margin: 22px 0 0; max-width: 18ch;
-    font-size: clamp(21px, 2.2vw, 32px); line-height: 1.18; font-weight: 500; letter-spacing: -.02em;
-    color: var(--graphite);
-    text-wrap: balance;
-  }
+  .dw-slice .dw-slice { bottom: calc(100% - 1px); }
+  .dw-head { position: absolute; left: 0; top: 881px; width: 360px; height: 503px; transform-origin: 50% 0; }
+  .dw-head img { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity .6s var(--ease); }
+  .animating .dw { will-change: transform; }
 
-  .scroll-hint {
-    position: absolute; z-index: 3; left: var(--gutter); bottom: 28px;
-    display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
-    font-size: 12px; color: var(--muted); letter-spacing: .04em;
-  }
-  .scroll-hint span {
-    width: 1px; height: 34px; background: linear-gradient(var(--muted), transparent);
-    transform-origin: top; animation: hint 2.2s var(--ease) infinite;
-  }
-  @keyframes hint { 0% { transform: scaleY(0); opacity: 1; } 70% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
-
-  /* hanging watch */
-  .hang {
-    position: absolute; z-index: 2;
-    left: var(--watch-x); top: var(--watch-top);
-    height: var(--watch-h);
-    aspect-ratio: 360 / 1384;
-    transform: translateX(-50%);
-  }
-  .pendulum { position: relative; width: 100%; height: 100%; transform-origin: 50% 0; will-change: transform; }
-  .watch { position: relative; width: 100%; height: 100%; will-change: transform; }
-  .strap-wrap {
-    position: absolute; left: 0; top: 0; width: 100%; height: calc(100% * 881 / 1384);
-    transform-origin: 50% 100%; perspective: 900px; will-change: transform;
-  }
-  .strap { width: 100%; height: 100%; transform-origin: 50% 100%; }
-  .head-wrap { position: absolute; left: 0; bottom: 0; width: 100%; height: calc(100% * 503 / 1384); }
-  .head { width: 100%; height: 100%; filter: drop-shadow(0 30px 40px var(--shadow)); }
-  /* soft floor shadow under the hanging watch */
-  .hang-shadow {
-    position: absolute; left: -30%; top: calc(100% + 3svh);
-    width: 160%; height: 28px;
-    background: radial-gradient(closest-side, rgba(0,0,0,.18), transparent);
-    filter: blur(6px); will-change: transform, opacity;
-  }
-
-  /* colours */
   .colors {
     position: absolute; inset: 0; z-index: 1;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 76px var(--gutter) 32px;
+    padding: 64px var(--gutter) 28px; text-align: center;
   }
-  .colors-head { text-align: center; margin-bottom: clamp(20px, 4svh, 48px); }
-  .section-title {
-    margin: 0; font-size: clamp(40px, 6vw, 88px); line-height: 1; font-weight: 700; letter-spacing: -.045em;
-    text-wrap: balance;
+  .colors-head { margin-bottom: clamp(14px, 3svh, 36px); }
+  .section-title { font-size: clamp(40px, 6vw, 88px); line-height: 1.02; font-weight: 700; letter-spacing: -.045em; text-wrap: balance; }
+  .section-sub { margin: 14px auto 0; max-width: 48ch; color: var(--muted); font-size: clamp(17px, 1.4vw, 21px); text-wrap: pretty; }
+  .picker { display: inline-flex; gap: 14px; margin-top: clamp(14px, 2.4svh, 24px); padding: 0; border: 0; }
+  .picker button {
+    position: relative; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer; touch-action: manipulation;
   }
-  .section-sub { margin: 14px auto 0; max-width: 46ch; color: var(--muted); font-size: clamp(17px, 1.4vw, 21px); }
+  .picker button::before { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1px rgba(0,0,0,.18); }
+  .picker button::after { content: ""; position: absolute; inset: 5px; border-radius: 50%; box-shadow: 0 0 0 1.5px var(--fg); opacity: 0; transform: scale(.8); transition: opacity .25s var(--ease), transform .35s var(--ease); }
+  .picker button[aria-checked="true"]::after { opacity: 1; transform: none; }
+  .picker-label { display: block; min-height: 1.5em; margin-top: 2px; font-size: 14px; color: var(--muted); }
 
-  .variants { position: relative; width: var(--card-w); margin: 0; padding: 0; list-style: none; }
-  .variant { text-align: center; }
-  .variant:not(.is-center) { position: absolute; inset: 0; }
-  .variant figure { margin: 0; }
-  .variant img {
-    width: 100%; aspect-ratio: 910 / 1104; height: auto;
-    filter: drop-shadow(0 24px 32px rgba(0,0,0,.14));
-  }
-  .variant-meta { margin-top: clamp(10px, 2svh, 22px); }
-  .variant h3 { margin: 0; font-size: clamp(17px, 1.6vw, 24px); font-weight: 600; letter-spacing: -.02em; }
-  .price { margin: 2px 0 14px; color: var(--muted); font-size: clamp(14px, 1.1vw, 17px); font-variant-numeric: tabular-nums; }
-  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }
+  .variants { display: grid; grid-template-columns: auto auto auto; align-items: end; justify-content: center; gap: 0 clamp(18px, 6vw, 96px); margin: 0; padding: 0; list-style: none; }
+  .slot { width: var(--slot-w); aspect-ratio: 360 / 610; margin: 0 auto; }
+  .variant { --slot-w: min(12vw, 26svh * .59); }
+  .variant.is-center { --slot-w: min(15.5vw, 37svh * .59); }
+  .slot-static { display: none; }
+  .meta { margin-top: clamp(10px, 2svh, 20px); }
+  .meta h3 { font-size: clamp(16px, 1.5vw, 22px); font-weight: 600; letter-spacing: -.02em; }
+  .price { margin: 2px 0 12px; color: var(--muted); font-size: clamp(14px, 1.1vw, 16px); font-variant-numeric: tabular-nums; }
+  .swatch { display: inline-block; width: 10px; height: 10px; margin-right: 7px; border-radius: 50%; vertical-align: 1px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }
+  .meta-swap { transition: opacity .3s var(--ease); }
+  .meta-swap.fading { opacity: 0; }
 
-  /* ---------- Final CTA ---------- */
-  .cta {
-    padding: clamp(120px, 22svh, 220px) var(--gutter) clamp(96px, 16svh, 160px);
-    text-align: center;
+  /* ---------- Generic sections ---------- */
+  .sec { padding: clamp(96px, 16svh, 168px) var(--gutter); }
+  .sec.alt { background: var(--surface); }
+  .wrap { max-width: var(--maxw); margin: 0 auto; }
+  .kicker { font-size: clamp(17px, 1.5vw, 21px); font-weight: 600; color: var(--muted); margin-bottom: 10px; }
+  .big { font-size: clamp(44px, 7vw, 104px); line-height: 1; font-weight: 700; letter-spacing: -.05em; text-wrap: balance; }
+  .lede { margin-top: 20px; max-width: 52ch; font-size: clamp(18px, 1.6vw, 24px); line-height: 1.4; color: var(--muted); text-wrap: pretty; }
+  .note { margin-top: 28px; font-size: 13px; color: var(--muted); }
+
+  /* Highlights carousel */
+  .hl-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; }
+  .hl-ctrl { display: flex; gap: 12px; }
+  .round {
+    display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0;
+    background: #e8e8ed; color: var(--fg); cursor: pointer; transition: background-color .2s, opacity .2s;
   }
-  .cta-title {
-    margin: 0 auto; max-width: 14ch;
-    font-size: clamp(48px, 8.5vw, 132px); line-height: .96; font-weight: 700; letter-spacing: -.055em;
-    text-wrap: balance;
+  .round:hover { background: #dcdce1; }
+  .round[aria-disabled="true"] { opacity: .35; cursor: default; }
+  .round .icon { width: 20px; height: 20px; stroke-width: 2; }
+  .hl-track {
+    display: grid; grid-auto-flow: column; grid-auto-columns: min(372px, 80vw); gap: 20px;
+    margin: 40px calc(-1 * var(--gutter)) 0; padding: 4px var(--gutter) 24px; list-style: none;
+    overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding: 0 var(--gutter);
+    scrollbar-width: none;
   }
-  .cta-sub { margin: 24px auto 40px; max-width: 40ch; color: var(--muted); font-size: clamp(17px, 1.5vw, 22px); }
+  .hl-track::-webkit-scrollbar { display: none; }
+  .hl-card {
+    scroll-snap-align: start; display: flex; flex-direction: column; min-height: 440px; padding: 32px;
+    border-radius: var(--radius); background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 12px 32px rgba(0,0,0,.06);
+  }
+  .sec.alt .hl-card { background: #fff; }
+  .hl-card .icon { width: 40px; height: 40px; color: var(--graphite); }
+  .hl-card h3 { margin-top: auto; font-size: 28px; line-height: 1.1; font-weight: 700; letter-spacing: -.03em; }
+  .hl-card p { margin-top: 10px; color: var(--muted); }
+  .kv { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; }
+  .kv b { color: var(--fg); font-weight: 600; }
+
+  /* Closer look */
+  .closer { position: relative; max-width: 440px; margin: 56px auto 0; }
+  .closer img { width: 100%; aspect-ratio: 910 / 1104; }
+  /* callouts: dot on the product, thin leader line out to a label column beside the photo */
+  .callout { position: absolute; inset: 0; pointer-events: none; }
+  .callout .dot { position: absolute; left: var(--x); top: var(--y); width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1.5px var(--fg), 0 2px 8px rgba(0,0,0,.2); }
+  .callout .lead { position: absolute; top: var(--y); height: 1px; background: var(--fg); opacity: .5; }
+  .callout.left .lead { left: -44px; width: calc(var(--x) + 44px); transform-origin: 100% 0; }
+  .callout.right .lead { left: var(--x); right: -44px; transform-origin: 0 0; }
+  .callout .lab { position: absolute; top: calc(var(--y) - 24px); width: 170px; }
+  .callout.left .lab { right: calc(100% + 56px); text-align: right; }
+  .callout.right .lab { left: calc(100% + 56px); text-align: left; }
+  .lab b { display: block; font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+  .lab > span { display: block; font-size: 14px; color: var(--muted); line-height: 1.35; }
+  .callout .num { display: none; }
+  .callout-list { display: none; }
+
+  /* Health rows */
+  .rows { display: grid; gap: clamp(56px, 10svh, 112px); margin-top: 64px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: clamp(24px, 6vw, 96px); }
+  .row:nth-child(even) .row-media { order: 2; }
+  .row-media { border-radius: var(--radius); background: var(--surface); padding: clamp(24px, 4vw, 56px); }
+  .row-media img { width: 100%; aspect-ratio: 910 / 1104; }
+  .row-text .icon { width: 40px; height: 40px; color: var(--graphite); margin-bottom: 18px; }
+  .row-text h3 { font-size: clamp(30px, 3.4vw, 48px); line-height: 1.05; font-weight: 700; letter-spacing: -.035em; }
+  .row-text p { margin-top: 14px; max-width: 44ch; color: var(--muted); font-size: clamp(17px, 1.3vw, 19px); }
+
+  /* Metric / icon grids */
+  .grid { display: grid; gap: 20px; margin-top: 56px; }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  .tile { padding: 28px; border-radius: var(--radius); background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.05); }
+  .sec:not(.alt) .tile { background: var(--surface); box-shadow: none; }
+  .tile .icon { width: 34px; height: 34px; color: var(--graphite); }
+  .tile h3 { margin-top: 18px; font-size: 21px; font-weight: 600; letter-spacing: -.02em; }
+  .tile p { margin-top: 6px; color: var(--muted); font-size: 15px; }
+  .tile .kv { margin-top: 14px; }
+
+  /* Count-up stats */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 56px; }
+  .stat { padding: 32px 0; border-top: 1px solid var(--line); }
+  .stat-num { display: block; font-size: clamp(56px, 8vw, 120px); line-height: 1; font-weight: 700; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+  .stat-num.is-tbd { color: #c7c7cc; }
+  .stat-unit { font-size: .38em; letter-spacing: -.02em; margin-left: 4px; }
+  .stat-lab { display: block; margin-top: 12px; color: var(--muted); font-size: 17px; }
+
+  /* Safety list */
+  .ilist { margin: 48px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+  .ilist li { display: flex; gap: 20px; align-items: flex-start; padding: 26px 0; border-bottom: 1px solid var(--line); }
+  .ilist .icon { margin-top: 2px; color: var(--graphite); }
+  .ilist h3 { font-size: 21px; font-weight: 600; letter-spacing: -.02em; }
+  .ilist p { margin-top: 4px; color: var(--muted); }
+  .ilist .st { margin-left: auto; white-space: nowrap; }
+
+  /* Spec table */
+  .spec { margin-top: 48px; border-top: 1px solid var(--line); }
+  .spec-group { display: grid; grid-template-columns: minmax(140px, 1fr) 3fr; gap: 24px; padding: 28px 0; border-bottom: 1px solid var(--line); }
+  .spec-group h3 { font-size: 19px; font-weight: 600; letter-spacing: -.01em; }
+  .spec-group dl { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin: 0; }
+  .spec-group dt { color: var(--muted); font-size: 14px; }
+  .spec-group dd { margin: 2px 0 0; font-size: 17px; font-weight: 500; }
+
+  /* Final CTA */
+  .cta { text-align: center; padding: clamp(120px, 22svh, 220px) var(--gutter) clamp(96px, 16svh, 160px); }
+  .cta .big { max-width: 14ch; margin: 0 auto; font-size: clamp(48px, 8.5vw, 132px); }
+  .cta .lede { margin: 24px auto 40px; }
   .cta-price { display: block; margin-top: 16px; font-size: 14px; color: var(--muted); }
-
-  footer {
-    border-top: 1px solid var(--line);
-    padding: 28px var(--gutter) 40px;
-    display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between;
-    font-size: 13px; color: var(--muted);
-  }
+  footer { border-top: 1px solid var(--line); padding: 28px var(--gutter) 40px; font-size: 13px; color: var(--muted); }
+  .foot { max-width: var(--maxw); margin: 0 auto; display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; }
   footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
-  footer a { text-decoration: none; }
+  footer a { text-decoration: none; display: inline-flex; min-height: 24px; align-items: center; }
   footer a:hover { color: var(--fg); text-decoration: underline; }
-
-  .reveal { opacity: 0; transform: translateY(32px); }
+  .disclaimer { max-width: var(--maxw); margin: 0 auto 16px; }
 
   /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .g4 { grid-template-columns: repeat(2, 1fr); }
+    .g3 { grid-template-columns: repeat(2, 1fr); }
+    .lnav-links { display: none; }
+  }
   @media (max-width: 760px) {
-    :root {
-      --watch-h: 76svh;
-      --watch-top: -14svh;
-      --watch-x: 50%;
-      --card-w: min(27vw, 26svh);
-      --gap-pct: 112;
-    }
-    .nav-buy { display: none; }
-    .hero-copy { left: var(--gutter); right: var(--gutter); top: auto; bottom: 64px; transform: none; max-width: none; text-align: center; }
-    .hero-tag { margin: 12px auto 0; }
-    .scroll-hint { display: none; }
-    .variant .btn { min-height: 44px; padding: 0 14px; font-size: 14px; }
-    .price { margin-bottom: 10px; }
+    .hero-copy { left: var(--gutter); right: var(--gutter); top: auto; bottom: 40px; transform: none; max-width: none; text-align: center; }
+    .hero-tag { margin: 14px auto 0; }
+    .variant { --slot-w: 22vw; }
+    .variant.is-center { --slot-w: 30vw; }
+    .variants { gap: 0 4vw; }
+    .meta .btn { min-height: 44px; padding: 0 14px; font-size: 14px; }
+    .price { margin-bottom: 8px; }
+    .row { grid-template-columns: 1fr; }
+    .row:nth-child(even) .row-media { order: 0; }
+    .stats { grid-template-columns: 1fr; gap: 0; }
+    .spec-group { grid-template-columns: 1fr; gap: 14px; }
+    .hl-card { min-height: 380px; padding: 26px; }
+  }
+  @media (max-width: 1040px) {
+    /* callouts become numbered markers + list */
+    .callout .lead, .callout .lab { display: none; }
+    .callout .dot { width: 28px; height: 28px; margin: -14px 0 0 -14px; display: grid; place-items: center; }
+    .callout .num { display: block; font-size: 13px; font-weight: 600; }
+    .callout-list { display: grid; gap: 16px; margin: 32px 0 0; padding: 0; list-style: none; counter-reset: c; }
+    .callout-list li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; }
+    .callout-list li::before { counter-increment: c; content: counter(c); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; box-shadow: 0 0 0 1.5px var(--fg); font-size: 13px; font-weight: 600; }
+    .callout-list b { display: block; } .callout-list span { color: var(--muted); font-size: 15px; }
+  }
+  @media (max-width: 520px) {
+    .g3, .g4 { grid-template-columns: 1fr; }
+    .lnav-title { font-size: 17px; }
+    .hl-head { align-items: start; flex-direction: column; }
   }
 
-  /* ---------- No-motion / no-JS fallback: plain, readable flow ---------- */
+  /* ---------- Static layout (reduced motion, or scripts unavailable): everything visible ---------- */
   html:not(.motion) .stage { height: auto; min-height: 0; overflow: visible; }
-  html:not(.motion) .hero-copy, html:not(.motion) .hang, html:not(.motion) .colors { position: relative; inset: auto; left: auto; top: auto; transform: none; }
-  html:not(.motion) .hero { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 24px 8vw; padding: 100px var(--gutter) 40px; }
-  html:not(.motion) .hero-copy { max-width: 560px; }
-  html:not(.motion) .hang { height: min(80svh, 720px); }
-  html:not(.motion) .scroll-hint { display: none; }
-  html:not(.motion) .colors { padding-top: 80px; }
-  html:not(.motion) .variants { width: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 260px)); gap: 48px; justify-content: center; }
-  html:not(.motion) .variant:not(.is-center) { position: static; }
-  html:not(.motion) .variant.is-center { order: -1; }
-  html:not(.motion) .reveal { opacity: 1; transform: none; }
+  html:not(.motion) .gl, html:not(.motion) .dws, html:not(.motion) .shadows { display: none; }
+  html:not(.motion) .stage-top { position: relative; }
+  html:not(.motion) .hero { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 24px 8vw; padding: 24px var(--gutter) 40px; }
+  html:not(.motion) .hero-copy { position: relative; left: auto; right: auto; top: auto; bottom: auto; transform: none; max-width: 560px; }
+  html:not(.motion) .hero-static { display: block; }
+  html:not(.motion) .colors { position: relative; inset: auto; padding-top: 80px; padding-bottom: 40px; }
+  html:not(.motion) .slot { aspect-ratio: auto; width: auto; }
+  html:not(.motion) .slot-static { display: flex; flex-direction: column; align-items: center; }
+  html:not(.motion) .slot-static img { width: var(--slot-w); }
+  html:not(.motion) .variant { --slot-w: min(90px, 22vw); }
+  .hero-static { display: none; position: relative; margin: 0; }
+  .hero-static img { width: min(190px, 40vw); }
+  .hero-static::after { content: ""; display: block; width: 120%; margin: 14px -10% 0; height: 22px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.2), transparent); }
 
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation: none !important; transition: none !important; }
+    *, *::before, *::after { animation: none !important; transition-duration: 0s !important; }
   }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-aod" viewBox="0 0 24 24"><rect x="5.5" y="4.5" width="13" height="15" rx="3.5"/><path d="M9 2h6M9 22h6M12 9v3.2l2.2 1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.2 4.2 0 0 1 12 7.2a4.2 4.2 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20Z"/><path d="M7 12.5h2.5l1.2-2 2 4 1.3-2H17"/></symbol>
+    <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2.5" y="7" width="17" height="10" rx="2.5"/><path d="M22 10.5v3M6 10v4M9 10v4M12 10v4"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5s6 6.4 6 10.5a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5Z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5.2 3.8h3.3l1.6 4.1-2.1 1.4a10.5 10.5 0 0 0 6.7 6.7l1.4-2.1 4.1 1.6v3.3a1.7 1.7 0 0 1-1.8 1.7A16 16 0 0 1 3.5 5.6a1.7 1.7 0 0 1 1.7-1.8Z"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></symbol>
+    <symbol id="i-find" viewBox="0 0 24 24"><rect x="4" y="2.5" width="10.5" height="18" rx="2.2"/><path d="M8 17.5h2.5"/><circle cx="17" cy="11" r="3.2"/><path d="m19.4 13.4 2.1 2.1"/></symbol>
+    <symbol id="i-sos" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+    <symbol id="i-steps" viewBox="0 0 24 24"><path d="M8 3.5c1.8 0 2.8 2 2.8 4.4S9.8 12 8.4 12 5.8 10.3 5.8 7.8 6.4 3.5 8 3.5ZM16 9c1.6 0 2.6 1.9 2.6 4.1s-1 4-2.4 4-2.6-1.5-2.6-3.9S14.4 9 16 9Z"/><path d="M6.6 15h3.2M14.6 20.5h3.2"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h7.5a3 3 0 0 0 0-6h-7a3 3 0 0 1 0-6H16"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 21a6 6 0 0 0 6-6c0-4.2-3-6.3-4.2-10.5C11.6 6.6 10.6 8.6 10.5 11c-1-.8-1.6-1.9-1.7-3C7 10 6 12.5 6 15a6 6 0 0 0 6 6Z"/></symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v3.5l2.4 1.5M9.5 2.5h5"/></symbol>
+    <symbol id="i-run" viewBox="0 0 24 24"><circle cx="14.5" cy="4.5" r="1.8"/><path d="M5.5 21l3.6-5 3.2 2v-5l-3-3-3 2.2M12.3 10l2.6 3h3.6M9.1 16 8 13.8"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2.5 5 13.5h6l-1 8 8-11h-6l1-8Z"/></symbol>
+    <symbol id="i-bt" viewBox="0 0 24 24"><path d="m7 7.5 10 9-5 4.5v-18l5 4.5-10 9"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+  </defs>
+</svg>
+
 <a class="skip" href="#main" data-i18n="skip">Langsung ke konten</a>
 
-<header class="nav">
-  <a class="brand" href="#top" aria-label="Orbit — beranda">
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.25" stroke="currentColor" stroke-width="1.5"/><circle cx="18.5" cy="6.5" r="2.25" fill="currentColor"/></svg>
-    Orbit
-  </a>
-  <div class="nav-right">
-    <div class="lang" role="group" aria-label="Bahasa / Language">
-      <button type="button" data-lang="id" aria-pressed="true" lang="id">ID</button>
-      <button type="button" data-lang="en" aria-pressed="false" lang="en">EN</button>
+<header class="lnav" id="lnav">
+  <div class="lnav-in">
+    <a class="lnav-title" href="#overview">Orbit S</a>
+    <nav aria-label="Orbit S" data-i18n-aria="localNav">
+      <ul class="lnav-links">
+        <li><a href="#overview" data-i18n="navOverview">Ringkasan</a></li>
+        <li><a href="#highlights" data-i18n="navFeatures">Fitur</a></li>
+        <li><a href="#specs" data-i18n="navSpecs">Spesifikasi</a></li>
+      </ul>
+    </nav>
+    <div class="lnav-right">
+      <div class="lang" role="group" aria-label="Bahasa / Language">
+        <button type="button" data-lang="id" aria-pressed="true" lang="id">ID</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en">EN</button>
+      </div>
+      <a class="btn btn-sm" href="#" data-i18n="buy">Beli</a>
     </div>
-    <a class="btn nav-buy" href="#" data-i18n="buy">Beli</a>
   </div>
 </header>
 
 <main id="main">
-  <section class="story" id="top" aria-label="Orbit S">
+  <!-- ===== Story: hero → strap roll → colours (one pinned section, one master timeline) ===== -->
+  <section class="story" id="overview" aria-labelledby="hero-title">
     <div class="stage">
-      <div class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow" data-i18n="eyebrow">Baru</p>
-          <h1 class="hero-title">Orbit S</h1>
-          <p class="hero-tag" data-i18n="tagline">Semua yang penting, tepat di pergelangan.</p>
+      <div class="stage-top">
+        <a class="brand" href="#overview" aria-label="Orbit">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.25" stroke="currentColor" stroke-width="1.5"/><circle cx="18.5" cy="6.5" r="2.25" fill="currentColor"/></svg>
+          Orbit
+        </a>
+        <div class="lang" role="group" aria-label="Bahasa / Language">
+          <button type="button" data-lang="id" aria-pressed="true" lang="id">ID</button>
+          <button type="button" data-lang="en" aria-pressed="false" lang="en">EN</button>
         </div>
-
-        <div class="hang">
-          <div class="pendulum">
-            <div class="watch">
-              <div class="strap-wrap"><img class="strap" src="assets/orbit-strap.webp" width="360" height="881" alt="" aria-hidden="true"></div>
-              <div class="head-wrap"><img class="head" src="assets/orbit-head.webp" width="360" height="503" alt="Orbit S, warna Graphite, tergantung pada talinya" data-i18n-alt="heroAlt"></div>
-            </div>
-          </div>
-          <div class="hang-shadow" aria-hidden="true"></div>
-        </div>
-
-        <div class="scroll-hint" aria-hidden="true"><b data-i18n="scroll" style="font-weight:500">Gulir</b><span></span></div>
       </div>
 
+      <div class="hero">
+        <div class="hero-copy">
+          <div class="hero-fade">
+            <p class="eyebrow" data-i18n="eyebrow">Baru</p>
+            <h1 class="hero-title" id="hero-title">Orbit S</h1>
+            <p class="hero-tag" data-i18n="tagline">Semua yang penting, tepat di pergelangan.</p>
+          </div>
+        </div>
+        <figure class="hero-static">
+          <img src="assets/orbit-strap-graphite.webp" width="360" height="881" alt="" aria-hidden="true">
+          <img src="assets/orbit-head-graphite.webp" width="360" height="503" alt="Orbit S Graphite, tergantung pada talinya" data-i18n-alt="heroAlt">
+        </figure>
+      </div>
+
+      <div class="shadows" aria-hidden="true"><div class="shadow"></div><div class="shadow"></div><div class="shadow"></div></div>
+      <div class="dws" aria-hidden="true"></div>
+      <canvas class="gl" aria-hidden="true"></canvas>
+      <p class="sr-only" data-i18n="heroAlt">Orbit S Graphite, tergantung pada talinya</p>
+
       <div class="colors" id="colors" aria-labelledby="colors-title">
-        <div class="colors-head reveal">
+        <div class="colors-head">
           <h2 class="section-title" id="colors-title" data-i18n="colorsTitle">Tiga warna. Satu Orbit.</h2>
-          <p class="section-sub" data-i18n="colorsSub">Aluminium dengan sentuhan akhir halus dan tali silikon lembut yang pas sepanjang hari.</p>
+          <p class="section-sub" data-i18n="colorsSub">Pilih warna untuk melihatnya di tengah.</p>
+          <div class="picker" role="radiogroup" aria-label="Warna" data-i18n-aria="pickColor">
+            <button type="button" role="radio" data-tint="silver" style="--c:#b8b9bb" aria-checked="false"><span class="sr-only" data-name="silver">Silver Mist</span></button>
+            <button type="button" role="radio" data-tint="graphite" style="--c:#2a2a2c" aria-checked="true"><span class="sr-only" data-name="graphite">Graphite</span></button>
+            <button type="button" role="radio" data-tint="olive" style="--c:#5b6340" aria-checked="false"><span class="sr-only" data-name="olive">Olive</span></button>
+          </div>
+          <span class="picker-label" aria-live="polite"></span>
         </div>
         <ul class="variants">
-          <li class="variant" data-pos="-1">
-            <figure>
-              <img src="assets/orbit-silver.webp" width="910" height="1104" loading="lazy" decoding="async" alt="Orbit S warna Silver Mist dengan tali abu-abu" data-i18n-alt="silverAlt">
-              <figcaption class="variant-meta reveal">
-                <h3><span class="swatch" style="background:#b9b9bb" aria-hidden="true"></span>Silver Mist</h3>
-                <p class="price">Rp 3.299.000</p>
-                <a class="btn" href="#" data-i18n="buy" aria-describedby="buy-silver">Beli</a>
-                <span id="buy-silver" hidden>Orbit S Silver Mist</span>
-              </figcaption>
-            </figure>
+          <li class="variant" data-slot="0">
+            <div class="slot"><div class="slot-static"><img src="assets/orbit-strap-silver.webp" width="360" height="881" alt="" loading="lazy"><img class="slot-head" src="assets/orbit-head-silver.webp" width="360" height="503" alt="" loading="lazy"></div></div>
+            <div class="meta meta-swap"><h3><span class="swatch"></span><span class="v-name">Silver Mist</span></h3><p class="price"><span class="v-price tbd">TBD</span></p><a class="btn v-buy" href="#" data-i18n="buy">Beli</a></div>
           </li>
-          <li class="variant is-center" data-pos="0">
-            <figure>
-              <img class="center-img" src="assets/orbit-midnight.webp" width="910" height="1104" decoding="async" alt="Orbit S warna Graphite dengan tali hitam" data-i18n-alt="graphiteAlt">
-              <figcaption class="variant-meta reveal">
-                <h3><span class="swatch" style="background:#1d1d1f" aria-hidden="true"></span>Graphite</h3>
-                <p class="price">Rp 3.299.000</p>
-                <a class="btn" href="#" data-i18n="buy" aria-describedby="buy-graphite">Beli</a>
-                <span id="buy-graphite" hidden>Orbit S Graphite</span>
-              </figcaption>
-            </figure>
+          <li class="variant is-center" data-slot="1">
+            <div class="slot"><div class="slot-static"><img src="assets/orbit-strap-graphite.webp" width="360" height="881" alt="" loading="lazy"><img class="slot-head" src="assets/orbit-head-graphite.webp" width="360" height="503" alt="" loading="lazy"></div></div>
+            <div class="meta meta-swap"><h3><span class="swatch"></span><span class="v-name">Graphite</span></h3><p class="price"><span class="v-price tbd">TBD</span></p><a class="btn v-buy" href="#" data-i18n="buy">Beli</a></div>
           </li>
-          <li class="variant" data-pos="1">
-            <figure>
-              <img src="assets/orbit-olive.webp" width="910" height="1104" loading="lazy" decoding="async" alt="Orbit S warna Olive dengan tali hijau zaitun" data-i18n-alt="oliveAlt">
-              <figcaption class="variant-meta reveal">
-                <h3><span class="swatch" style="background:#5b6340" aria-hidden="true"></span>Olive</h3>
-                <p class="price">Rp 3.499.000</p>
-                <a class="btn" href="#" data-i18n="buy" aria-describedby="buy-olive">Beli</a>
-                <span id="buy-olive" hidden>Orbit S Olive</span>
-              </figcaption>
-            </figure>
+          <li class="variant" data-slot="2">
+            <div class="slot"><div class="slot-static"><img src="assets/orbit-strap-olive.webp" width="360" height="881" alt="" loading="lazy"><img class="slot-head" src="assets/orbit-head-olive.webp" width="360" height="503" alt="" loading="lazy"></div></div>
+            <div class="meta meta-swap"><h3><span class="swatch"></span><span class="v-name">Olive</span></h3><p class="price"><span class="v-price tbd">TBD</span></p><a class="btn v-buy" href="#" data-i18n="buy">Beli</a></div>
           </li>
         </ul>
       </div>
     </div>
   </section>
 
-  <section class="cta" aria-labelledby="cta-title">
-    <h2 class="cta-title reveal" id="cta-title" data-i18n="ctaTitle">Waktunya punya Orbit.</h2>
-    <p class="cta-sub reveal" data-i18n="ctaSub">Pilih warnamu, pakai hari ini. Gratis ongkir dan garansi resmi 1 tahun.</p>
-    <div class="reveal">
+  <!-- ===== a. Highlights ===== -->
+  <section class="sec alt" id="highlights" aria-labelledby="hl-title">
+    <div class="wrap">
+      <div class="hl-head">
+        <div class="rv">
+          <p class="kicker" data-i18n="hlKicker">Sorotan</p>
+          <h2 class="big" id="hl-title" data-i18n="hlTitle">Kenali Orbit S.</h2>
+        </div>
+        <div class="hl-ctrl rv">
+          <button class="round" type="button" data-dir="-1" aria-label="Sebelumnya" data-i18n-aria="prev" aria-controls="hl-track"><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg></button>
+          <button class="round" type="button" data-dir="1" aria-label="Berikutnya" data-i18n-aria="next" aria-controls="hl-track"><svg class="icon" aria-hidden="true"><use href="#i-right"/></svg></button>
+        </div>
+      </div>
+      <ul class="hl-track" id="hl-track" tabindex="0" aria-label="Sorotan fitur" data-i18n-aria="hlTrack">
+        <li class="hl-card rv"><svg class="icon" aria-hidden="true"><use href="#i-aod"/></svg><h3 data-i18n="f1t">Layar Selalu Aktif</h3><p data-i18n="f1d">Waktu dan info penting tetap terlihat tanpa perlu mengangkat pergelangan.</p><p class="kv"><span data-i18n="kDisplay">Layar</span><b data-spec="display.size" data-unit="inch">TBD</b></p></li>
+        <li class="hl-card rv"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg><h3 data-i18n="f2t">Pelacakan Tidur</h3><p data-i18n="f2d">Lihat pola tidurmu setiap pagi dan pahami ritme istirahatmu.</p><p class="kv"><span data-i18n="kStages">Tahapan tidur</span><b data-spec="sensors.sleepStages">TBD</b></p></li>
+        <li class="hl-card rv"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg><h3 data-i18n="f3t">Detak Jantung</h3><p data-i18n="f3d">Pantau detak jantung sepanjang hari dan saat berolahraga.</p><p class="kv"><span data-i18n="kSensor">Sensor</span><b data-spec="sensors.heartRateType">TBD</b></p></li>
+        <li class="hl-card rv"><svg class="icon" aria-hidden="true"><use href="#i-battery"/></svg><h3 data-i18n="f4t">Baterai</h3><p data-i18n="f4d">Dirancang untuk menemanimu berhari-hari di antara pengisian.</p><p class="kv"><span data-i18n="kBattery">Daya tahan</span><b data-spec="battery.days" data-unit="days">TBD</b></p></li>
+        <li class="hl-card rv"><svg class="icon" aria-hidden="true"><use href="#i-drop"/></svg><h3 data-i18n="f5t">Tahan Air</h3><p data-i18n="f5d">Cuci tangan, hujan, atau keringat — tetap pakai dengan tenang.</p><p class="kv"><span data-i18n="kRating">Rating</span><b data-spec="water.rating">TBD</b></p></li>
+        <li class="hl-card rv"><svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg><h3 data-i18n="f6t">Notifikasi</h3><p data-i18n="f6d">Pesan dan pengingat dari ponsel muncul langsung di pergelangan.</p><p class="kv"><span data-i18n="kCompat">Kompatibel</span><b data-spec="connectivity.compatibility">TBD</b></p></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== b. Closer look ===== -->
+  <section class="sec" id="closer" aria-labelledby="closer-title">
+    <div class="wrap" style="text-align:center">
+      <p class="kicker rv" data-i18n="closerKicker">Desain</p>
+      <h2 class="big rv" id="closer-title" data-i18n="closerTitle">Lihat lebih dekat.</h2>
+      <div class="closer rv">
+        <img src="assets/orbit-midnight.webp" width="910" height="1104" loading="lazy" decoding="async" alt="Orbit S Graphite dilihat dari samping" data-i18n-alt="closerAlt">
+        <div class="callout left" style="--x:38%;--y:44%"><span class="lead"></span><span class="dot"><span class="num">1</span></span><span class="lab"><b data-i18n="c1t">Layar</b><span data-i18n="c1d">Layar Selalu Aktif.</span></span></div>
+        <div class="callout left" style="--x:44%;--y:83%"><span class="lead"></span><span class="dot"><span class="num">2</span></span><span class="lab"><b data-i18n="c2t">Sensor</b><span data-i18n="c2d">Detak jantung, di sisi bawah bodi.</span></span></div>
+        <div class="callout right" style="--x:73%;--y:30%"><span class="lead"></span><span class="dot"><span class="num">3</span></span><span class="lab"><b data-i18n="c3t">Tombol</b><span data-i18n="c3d">Tombol samping untuk navigasi cepat.</span></span></div>
+        <div class="callout right" style="--x:90%;--y:62%"><span class="lead"></span><span class="dot"><span class="num">4</span></span><span class="lab"><b data-i18n="c4t">Tali</b><span><span data-i18n="kMaterial">Material</span>: <span data-spec="band.material">TBD</span></span></span></div>
+      </div>
+      <ol class="callout-list" style="text-align:left">
+        <li><div><b data-i18n="c1t">Layar</b><span data-i18n="c1d">Layar Selalu Aktif.</span></div></li>
+        <li><div><b data-i18n="c2t">Sensor</b><span data-i18n="c2d">Detak jantung, di sisi bawah bodi.</span></div></li>
+        <li><div><b data-i18n="c3t">Tombol</b><span data-i18n="c3d">Tombol samping untuk navigasi cepat.</span></div></li>
+        <li><div><b data-i18n="c4t">Tali</b><span><span data-i18n="kMaterial">Material</span>: <span data-spec="band.material">TBD</span></span></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== c. Health ===== -->
+  <section class="sec alt" id="health" aria-labelledby="health-title">
+    <div class="wrap">
+      <p class="kicker rv" data-i18n="healthKicker">Kesehatan</p>
+      <h2 class="big rv" id="health-title" data-i18n="healthTitle">Kenali tubuhmu, setiap hari.</h2>
+      <div class="rows">
+        <div class="row">
+          <div class="row-media rv"><img src="assets/orbit-silver.webp" width="910" height="1104" loading="lazy" decoding="async" alt="Orbit S Silver Mist" data-i18n-alt="silverAlt"></div>
+          <div class="row-text rv"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg><h3 data-i18n="h1t">Detak jantung, sepanjang hari.</h3><p data-i18n="h1d">Lihat detak jantungmu kapan saja dan bagaimana ia berubah saat beraktivitas.</p><p class="kv"><span data-i18n="kSensor">Sensor</span><b data-spec="sensors.heartRateType">TBD</b></p></div>
+        </div>
+        <div class="row">
+          <div class="row-media rv"><img src="assets/orbit-olive.webp" width="910" height="1104" loading="lazy" decoding="async" alt="Orbit S Olive" data-i18n-alt="oliveAlt"></div>
+          <div class="row-text rv"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg><h3 data-i18n="h2t">Tidur yang lebih kamu pahami.</h3><p data-i18n="h2d">Pakai saat tidur, lalu lihat ringkasan malammu di pagi hari.</p><p class="kv"><span data-i18n="kStages">Tahapan tidur</span><b data-spec="sensors.sleepStages">TBD</b></p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== d. Fitness ===== -->
+  <section class="sec" id="fitness" aria-labelledby="fit-title">
+    <div class="wrap">
+      <p class="kicker rv" data-i18n="fitKicker">Kebugaran</p>
+      <h2 class="big rv" id="fit-title" data-i18n="fitTitle">Setiap gerak dihitung.</h2>
+      <p class="lede rv" data-i18n="fitLede">Metrik aktivitas harian dalam satu sentuhan.</p>
+      <div class="grid g3">
+        <div class="tile rv"><svg class="icon" aria-hidden="true"><use href="#i-steps"/></svg><h3 data-i18n="m1">Langkah</h3><p class="kv"><span data-i18n="kSupport">Dukungan</span><b data-spec="fitness.steps">TBD</b></p></div>
+        <div class="tile rv"><svg class="icon" aria-hidden="true"><use href="#i-route"/></svg><h3 data-i18n="m2">Jarak</h3><p class="kv"><span data-i18n="kSupport">Dukungan</span><b data-spec="fitness.distance">TBD</b></p></div>
+        <div class="tile rv"><svg class="icon" aria-hidden="true"><use href="#i-flame"/></svg><h3 data-i18n="m3">Kalori aktif</h3><p class="kv"><span data-i18n="kSupport">Dukungan</span><b data-spec="fitness.calories">TBD</b></p></div>
+        <div class="tile rv"><svg class="icon" aria-hidden="true"><use href="#i-timer"/></svg><h3 data-i18n="m4">Menit aktif</h3><p class="kv"><span data-i18n="kSupport">Dukungan</span><b data-spec="fitness.activeMinutes">TBD</b></p></div>
+        <div class="tile rv"><svg class="icon" aria-hidden="true"><use href="#i-run"/></svg><h3 data-i18n="m5">Mode olahraga</h3><p class="kv"><span data-i18n="kModes">Jumlah mode</span><b data-spec="fitness.workoutModes">TBD</b></p></div>
+        <div class="tile rv"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg><h3 data-i18n="m6">Detak saat latihan</h3><p class="kv"><span data-i18n="kSupport">Dukungan</span><b data-spec="fitness.workoutHeartRate">TBD</b></p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== e. Battery & performance ===== -->
+  <section class="sec alt" id="battery" aria-labelledby="bat-title">
+    <div class="wrap">
+      <p class="kicker rv" data-i18n="batKicker">Baterai &amp; Performa</p>
+      <h2 class="big rv" id="bat-title" data-i18n="batTitle">Tahan lama. Cepat terisi.</h2>
+      <div class="stats">
+        <div class="stat rv"><span class="stat-num" data-count="battery.days" data-unit="days">TBD</span><span class="stat-lab" data-i18n="s1">Daya tahan baterai, pemakaian umum</span></div>
+        <div class="stat rv"><span class="stat-num" data-count="battery.aodDays" data-unit="days">TBD</span><span class="stat-lab" data-i18n="s2">Dengan Layar Selalu Aktif</span></div>
+        <div class="stat rv"><span class="stat-num" data-count="battery.chargeMinutes" data-unit="min">TBD</span><span class="stat-lab" data-i18n="s3">Waktu pengisian penuh</span></div>
+      </div>
+      <p class="note rv" data-i18n="batNote">Angka akan diperbarui setelah pengujian resmi.</p>
+    </div>
+  </section>
+
+  <!-- ===== f. Connectivity ===== -->
+  <section class="sec" id="connect" aria-labelledby="con-title">
+    <div class="wrap">
+      <p class="kicker rv" data-i18n="conKicker">Konektivitas</p>
+      <h2 class="big rv" id="con-title" data-i18n="conTitle">Tetap terhubung tanpa ponsel di tangan.</h2>
+      <div class="grid g4">
+        <div class="tile rv"><svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg><h3 data-i18n="k1t">Notifikasi</h3><p data-i18n="k1d">Pesan dan aplikasi, sekilas lihat.</p></div>
+        <div class="tile rv"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg><h3 data-i18n="k2t">Panggilan</h3><p data-i18n="k2d">Lihat siapa yang menelepon.</p></div>
+        <div class="tile rv"><svg class="icon" aria-hidden="true"><use href="#i-music"/></svg><h3 data-i18n="k3t">Musik</h3><p data-i18n="k3d">Kendalikan musik dari pergelangan.</p></div>
+        <div class="tile rv"><svg class="icon" aria-hidden="true"><use href="#i-find"/></svg><h3 data-i18n="k4t">Cari Ponsel</h3><p data-i18n="k4d">Bunyikan ponselmu saat terselip.</p></div>
+      </div>
+      <p class="kv rv" style="max-width:520px"><span><svg class="icon" style="width:18px;height:18px;vertical-align:-4px" aria-hidden="true"><use href="#i-bt"/></svg> Bluetooth</span><b data-spec="connectivity.bluetooth">TBD</b></p>
+    </div>
+  </section>
+
+  <!-- ===== g. Safety ===== -->
+  <section class="sec alt" id="safety" aria-labelledby="safe-title">
+    <div class="wrap">
+      <p class="kicker rv" data-i18n="safeKicker">Keselamatan</p>
+      <h2 class="big rv" id="safe-title" data-i18n="safeTitle">Bantuan, saat dibutuhkan.</h2>
+      <ul class="ilist">
+        <li class="rv"><svg class="icon" aria-hidden="true"><use href="#i-sos"/></svg><div><h3 data-i18n="sf1t">Panggilan darurat</h3><p data-i18n="sf1d">Hubungi bantuan langsung dari jam.</p></div><span class="st" data-spec="safety.sos">TBD</span></li>
+        <li class="rv"><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg><div><h3 data-i18n="sf2t">Kontak darurat</h3><p data-i18n="sf2d">Simpan orang terdekat agar mudah dihubungi.</p></div><span class="st" data-spec="safety.emergencyContacts">TBD</span></li>
+        <li class="rv"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg><div><h3 data-i18n="sf3t">Bagikan lokasi</h3><p data-i18n="sf3d">Kirim lokasimu ke kontak darurat.</p></div><span class="st" data-spec="safety.shareLocation">TBD</span></li>
+      </ul>
+      <p class="note rv" data-i18n="safeNote">Ketersediaan fitur keselamatan masih diverifikasi.</p>
+    </div>
+  </section>
+
+  <!-- ===== h. Specs ===== -->
+  <section class="sec" id="specs" aria-labelledby="spec-title">
+    <div class="wrap">
+      <h2 class="big rv" id="spec-title" data-i18n="specTitle">Spesifikasi</h2>
+      <div class="spec">
+        <div class="spec-group rv"><h3 data-i18n="gDisplay">Layar</h3><dl>
+          <div><dt data-i18n="kSize">Ukuran</dt><dd data-spec="display.size" data-unit="inch">TBD</dd></div>
+          <div><dt data-i18n="kType">Jenis</dt><dd data-spec="display.type">TBD</dd></div>
+          <div><dt data-i18n="kResolution">Resolusi</dt><dd data-spec="display.resolution">TBD</dd></div>
+          <div><dt data-i18n="f1t">Layar Selalu Aktif</dt><dd data-spec="display.alwaysOn">TBD</dd></div>
+        </dl></div>
+        <div class="spec-group rv"><h3 data-i18n="gCase">Bodi &amp; Tali</h3><dl>
+          <div><dt data-i18n="kCaseMaterial">Material bodi</dt><dd data-spec="case.material">TBD</dd></div>
+          <div><dt data-i18n="kDimensions">Dimensi</dt><dd data-spec="case.dimensions">TBD</dd></div>
+          <div><dt data-i18n="kWeight">Berat</dt><dd data-spec="case.weight" data-unit="g">TBD</dd></div>
+          <div><dt data-i18n="kBandMaterial">Material tali</dt><dd data-spec="band.material">TBD</dd></div>
+          <div><dt data-i18n="kColors">Warna</dt><dd data-spec="colorsList">Graphite, Silver Mist, Olive</dd></div>
+          <div><dt data-i18n="kButton">Tombol samping</dt><dd data-spec="case.sideButton">TBD</dd></div>
+        </dl></div>
+        <div class="spec-group rv"><h3 data-i18n="gHealth">Kesehatan &amp; Sensor</h3><dl>
+          <div><dt data-i18n="f3t">Detak Jantung</dt><dd data-spec="sensors.heartRate">TBD</dd></div>
+          <div><dt data-i18n="f2t">Pelacakan Tidur</dt><dd data-spec="sensors.sleep">TBD</dd></div>
+          <div><dt data-i18n="kOtherSensors">Sensor lain</dt><dd data-spec="sensors.other">TBD</dd></div>
+        </dl></div>
+        <div class="spec-group rv"><h3 data-i18n="gBattery">Baterai</h3><dl>
+          <div><dt data-i18n="s1">Daya tahan baterai, pemakaian umum</dt><dd data-spec="battery.days" data-unit="days">TBD</dd></div>
+          <div><dt data-i18n="s2">Dengan Layar Selalu Aktif</dt><dd data-spec="battery.aodDays" data-unit="days">TBD</dd></div>
+          <div><dt data-i18n="s3">Waktu pengisian penuh</dt><dd data-spec="battery.chargeMinutes" data-unit="min">TBD</dd></div>
+          <div><dt data-i18n="kCharger">Pengisi daya</dt><dd data-spec="battery.charger">TBD</dd></div>
+        </dl></div>
+        <div class="spec-group rv"><h3 data-i18n="gConnect">Konektivitas &amp; Ketahanan</h3><dl>
+          <div><dt>Bluetooth</dt><dd data-spec="connectivity.bluetooth">TBD</dd></div>
+          <div><dt data-i18n="kCompat">Kompatibel</dt><dd data-spec="connectivity.compatibility">TBD</dd></div>
+          <div><dt data-i18n="f5t">Tahan Air</dt><dd data-spec="water.rating">TBD</dd></div>
+          <div><dt data-i18n="kWarranty">Garansi</dt><dd data-spec="warranty">TBD</dd></div>
+        </dl></div>
+        <div class="spec-group rv"><h3 data-i18n="gPrice">Harga</h3><dl>
+          <div><dt>Graphite</dt><dd data-spec="price.graphite">TBD</dd></div>
+          <div><dt>Silver Mist</dt><dd data-spec="price.silver">TBD</dd></div>
+          <div><dt>Olive</dt><dd data-spec="price.olive">TBD</dd></div>
+        </dl></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== i. Final CTA ===== -->
+  <section class="cta" id="buy" aria-labelledby="cta-title">
+    <h2 class="big rv" id="cta-title" data-i18n="ctaTitle">Waktunya punya Orbit.</h2>
+    <p class="lede rv" data-i18n="ctaSub">Pilih warnamu. Orbit S hadir dalam Graphite, Silver Mist, dan Olive.</p>
+    <div class="rv">
       <a class="btn btn-lg" href="#" data-i18n="buyNow">Beli Orbit S</a>
-      <span class="cta-price" data-i18n="from">Mulai dari Rp 3.299.000</span>
+      <span class="cta-price"><span data-i18n="kPrice">Harga</span>: <span data-spec="price.graphite">TBD</span></span>
     </div>
   </section>
 </main>
 
 <footer>
-  <span>© 2026 Orbit. <span data-i18n="rights">Hak cipta dilindungi.</span></span>
-  <nav aria-label="Footer">
-    <a href="#" data-i18n="privacy">Privasi</a>
-    <a href="#" data-i18n="terms">Ketentuan</a>
-    <a href="#" data-i18n="support">Bantuan</a>
-  </nav>
+  <p class="disclaimer" data-i18n="disclaimer">Spesifikasi bertanda TBD masih menunggu konfirmasi. Gambar produk hanya ilustrasi.</p>
+  <div class="foot">
+    <span>© 2026 Orbit. <span data-i18n="rights">Hak cipta dilindungi.</span></span>
+    <nav aria-label="Footer">
+      <a href="#" data-i18n="privacy">Privasi</a>
+      <a href="#" data-i18n="terms">Ketentuan</a>
+      <a href="#" data-i18n="support">Bantuan</a>
+    </nav>
+  </div>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script>
 (() => {
-  /* ---------- i18n ---------- */
+  'use strict';
+  /* =====================================================================
+     SPEC — every product fact on the page lives here, nowhere else.
+     'TBD' = not confirmed. A value may be a plain string/number or {id, en}.
+     true = feature named in the brief (shown as "Ya"/"Yes").
+     ===================================================================== */
+  const SPEC = {
+    price: {
+      graphite: 'TBD', // TODO: verify (IDR)
+      silver: 'TBD',   // TODO: verify (IDR)
+      olive: 'TBD'     // TODO: verify (IDR)
+    },
+    colors: {
+      graphite: { id: 'Graphite', en: 'Graphite' },
+      silver: { id: 'Silver Mist', en: 'Silver Mist' },
+      olive: { id: 'Olive', en: 'Olive' }
+    },
+    display: {
+      size: 'TBD',       // TODO: verify (inch)
+      type: 'TBD',       // TODO: verify
+      resolution: 'TBD', // TODO: verify
+      alwaysOn: true     // from brief ("Layar Selalu Aktif")
+    },
+    case: {
+      material: 'TBD',   // TODO: verify
+      dimensions: 'TBD', // TODO: verify
+      weight: 'TBD',     // TODO: verify (g)
+      sideButton: true   // from brief ("tombol" callout)
+    },
+    band: {
+      material: 'TBD'    // TODO: verify
+    },
+    sensors: {
+      heartRate: true,        // from brief ("Detak Jantung")
+      heartRateType: 'TBD',   // TODO: verify (sensor type)
+      sleep: true,            // from brief ("Pelacakan Tidur")
+      sleepStages: 'TBD',     // TODO: verify
+      other: 'TBD'            // TODO: verify — do not add ECG/SpO2/etc. unless confirmed
+    },
+    fitness: {
+      steps: 'TBD',            // TODO: verify
+      distance: 'TBD',         // TODO: verify
+      calories: 'TBD',         // TODO: verify
+      activeMinutes: 'TBD',    // TODO: verify
+      workoutModes: 'TBD',     // TODO: verify (number of modes)
+      workoutHeartRate: 'TBD'  // TODO: verify
+    },
+    battery: {
+      days: 'TBD',          // TODO: verify (number → animated count-up)
+      aodDays: 'TBD',       // TODO: verify (number)
+      chargeMinutes: 'TBD', // TODO: verify (number)
+      charger: 'TBD'        // TODO: verify
+    },
+    water: {
+      rating: 'TBD'         // TODO: verify
+    },
+    connectivity: {
+      bluetooth: 'TBD',     // TODO: verify
+      compatibility: 'TBD', // TODO: verify (Android / iOS versions)
+      notifications: true,  // from brief
+      calls: true,          // from brief — TODO: verify whether calls can be answered on the watch
+      music: true,          // from brief
+      findPhone: true       // from brief
+    },
+    safety: {
+      sos: 'TBD',               // TODO: verify
+      emergencyContacts: 'TBD', // TODO: verify
+      shareLocation: 'TBD'      // TODO: verify
+    },
+    warranty: 'TBD'             // TODO: verify
+  };
+
   const DICT = {
     id: {
-      skip: 'Langsung ke konten', eyebrow: 'Baru', tagline: 'Semua yang penting, tepat di pergelangan.',
-      scroll: 'Gulir', buy: 'Beli', buyNow: 'Beli Orbit S',
-      colorsTitle: 'Tiga warna. Satu Orbit.',
-      colorsSub: 'Aluminium dengan sentuhan akhir halus dan tali silikon lembut yang pas sepanjang hari.',
-      ctaTitle: 'Waktunya punya Orbit.',
-      ctaSub: 'Pilih warnamu, pakai hari ini. Gratis ongkir dan garansi resmi 1 tahun.',
-      from: 'Mulai dari Rp 3.299.000', rights: 'Hak cipta dilindungi.',
-      privacy: 'Privasi', terms: 'Ketentuan', support: 'Bantuan',
-      heroAlt: 'Orbit S, warna Graphite, tergantung pada talinya',
-      silverAlt: 'Orbit S warna Silver Mist dengan tali abu-abu',
-      graphiteAlt: 'Orbit S warna Graphite dengan tali hitam',
-      oliveAlt: 'Orbit S warna Olive dengan tali hijau zaitun',
-      title: 'Orbit S — Semua yang penting, tepat di pergelangan.'
+      title: 'Orbit S — Semua yang penting, tepat di pergelangan.',
+      skip: 'Langsung ke konten', localNav: 'Navigasi Orbit S', navOverview: 'Ringkasan', navFeatures: 'Fitur', navSpecs: 'Spesifikasi',
+      buy: 'Beli', buyNow: 'Beli Orbit S', eyebrow: 'Baru', tagline: 'Semua yang penting, tepat di pergelangan.',
+      heroAlt: 'Orbit S Graphite, tergantung pada talinya',
+      colorsTitle: 'Tiga warna. Satu Orbit.', colorsSub: 'Pilih warna untuk melihatnya di tengah.', pickColor: 'Pilih warna', selected: 'Dipilih',
+      hlKicker: 'Sorotan', hlTitle: 'Kenali Orbit S.', hlTrack: 'Sorotan fitur', prev: 'Sebelumnya', next: 'Berikutnya',
+      f1t: 'Layar Selalu Aktif', f1d: 'Waktu dan info penting tetap terlihat tanpa perlu mengangkat pergelangan.',
+      f2t: 'Pelacakan Tidur', f2d: 'Lihat pola tidurmu setiap pagi dan pahami ritme istirahatmu.',
+      f3t: 'Detak Jantung', f3d: 'Pantau detak jantung sepanjang hari dan saat berolahraga.',
+      f4t: 'Baterai', f4d: 'Dirancang untuk menemanimu berhari-hari di antara pengisian.',
+      f5t: 'Tahan Air', f5d: 'Cuci tangan, hujan, atau keringat — tetap pakai dengan tenang.',
+      f6t: 'Notifikasi', f6d: 'Pesan dan pengingat dari ponsel muncul langsung di pergelangan.',
+      kDisplay: 'Layar', kStages: 'Tahapan tidur', kSensor: 'Sensor', kBattery: 'Daya tahan', kRating: 'Rating', kCompat: 'Kompatibel',
+      kMaterial: 'Material', kSupport: 'Dukungan', kModes: 'Jumlah mode', kSize: 'Ukuran', kType: 'Jenis', kResolution: 'Resolusi',
+      kCaseMaterial: 'Material bodi', kDimensions: 'Dimensi', kWeight: 'Berat', kBandMaterial: 'Material tali', kColors: 'Warna',
+      kButton: 'Tombol samping', kOtherSensors: 'Sensor lain', kCharger: 'Pengisi daya', kWarranty: 'Garansi', kPrice: 'Harga',
+      closerKicker: 'Desain', closerTitle: 'Lihat lebih dekat.', closerAlt: 'Orbit S Graphite dilihat dari samping',
+      c1t: 'Layar', c1d: 'Layar Selalu Aktif.', c2t: 'Sensor', c2d: 'Detak jantung, di sisi bawah bodi.',
+      c3t: 'Tombol', c3d: 'Tombol samping untuk navigasi cepat.', c4t: 'Tali',
+      healthKicker: 'Kesehatan', healthTitle: 'Kenali tubuhmu, setiap hari.',
+      h1t: 'Detak jantung, sepanjang hari.', h1d: 'Lihat detak jantungmu kapan saja dan bagaimana ia berubah saat beraktivitas.',
+      h2t: 'Tidur yang lebih kamu pahami.', h2d: 'Pakai saat tidur, lalu lihat ringkasan malammu di pagi hari.',
+      silverAlt: 'Orbit S Silver Mist', oliveAlt: 'Orbit S Olive',
+      fitKicker: 'Kebugaran', fitTitle: 'Setiap gerak dihitung.', fitLede: 'Metrik aktivitas harian dalam satu sentuhan.',
+      m1: 'Langkah', m2: 'Jarak', m3: 'Kalori aktif', m4: 'Menit aktif', m5: 'Mode olahraga', m6: 'Detak saat latihan',
+      batKicker: 'Baterai & Performa', batTitle: 'Tahan lama. Cepat terisi.',
+      s1: 'Daya tahan baterai, pemakaian umum', s2: 'Dengan Layar Selalu Aktif', s3: 'Waktu pengisian penuh',
+      batNote: 'Angka akan diperbarui setelah pengujian resmi.',
+      conKicker: 'Konektivitas', conTitle: 'Tetap terhubung tanpa ponsel di tangan.',
+      k1t: 'Notifikasi', k1d: 'Pesan dan aplikasi, sekilas lihat.', k2t: 'Panggilan', k2d: 'Lihat siapa yang menelepon.',
+      k3t: 'Musik', k3d: 'Kendalikan musik dari pergelangan.', k4t: 'Cari Ponsel', k4d: 'Bunyikan ponselmu saat terselip.',
+      safeKicker: 'Keselamatan', safeTitle: 'Bantuan, saat dibutuhkan.',
+      sf1t: 'Panggilan darurat', sf1d: 'Hubungi bantuan langsung dari jam.',
+      sf2t: 'Kontak darurat', sf2d: 'Simpan orang terdekat agar mudah dihubungi.',
+      sf3t: 'Bagikan lokasi', sf3d: 'Kirim lokasimu ke kontak darurat.',
+      safeNote: 'Ketersediaan fitur keselamatan masih diverifikasi.',
+      specTitle: 'Spesifikasi', gDisplay: 'Layar', gCase: 'Bodi & Tali', gHealth: 'Kesehatan & Sensor', gBattery: 'Baterai',
+      gConnect: 'Konektivitas & Ketahanan', gPrice: 'Harga',
+      ctaTitle: 'Waktunya punya Orbit.', ctaSub: 'Pilih warnamu. Orbit S hadir dalam Graphite, Silver Mist, dan Olive.',
+      disclaimer: 'Spesifikasi bertanda TBD masih menunggu konfirmasi. Gambar produk hanya ilustrasi.',
+      rights: 'Hak cipta dilindungi.', privacy: 'Privasi', terms: 'Ketentuan', support: 'Bantuan',
+      yes: 'Ya', no: 'Tidak', u_days: 'hari', u_min: 'menit', u_inch: 'inci', u_g: 'g'
     },
     en: {
-      skip: 'Skip to content', eyebrow: 'New', tagline: 'Everything that matters, right on your wrist.',
-      scroll: 'Scroll', buy: 'Buy', buyNow: 'Buy Orbit S',
-      colorsTitle: 'Three colours. One Orbit.',
-      colorsSub: 'Finely finished aluminium and a soft silicone band that feels right all day.',
-      ctaTitle: 'Time for Orbit.',
-      ctaSub: 'Pick your colour, wear it today. Free shipping and a 1-year official warranty.',
-      from: 'From Rp 3,299,000', rights: 'All rights reserved.',
-      privacy: 'Privacy', terms: 'Terms', support: 'Support',
+      title: 'Orbit S — Everything that matters, right on your wrist.',
+      skip: 'Skip to content', localNav: 'Orbit S navigation', navOverview: 'Overview', navFeatures: 'Features', navSpecs: 'Specs',
+      buy: 'Buy', buyNow: 'Buy Orbit S', eyebrow: 'New', tagline: 'Everything that matters, right on your wrist.',
       heroAlt: 'Orbit S in Graphite, hanging by its band',
-      silverAlt: 'Orbit S in Silver Mist with a grey band',
-      graphiteAlt: 'Orbit S in Graphite with a black band',
-      oliveAlt: 'Orbit S in Olive with an olive-green band',
-      title: 'Orbit S — Everything that matters, right on your wrist.'
+      colorsTitle: 'Three colours. One Orbit.', colorsSub: 'Pick a colour to bring it to the centre.', pickColor: 'Pick a colour', selected: 'Selected',
+      hlKicker: 'Highlights', hlTitle: 'Meet Orbit S.', hlTrack: 'Feature highlights', prev: 'Previous', next: 'Next',
+      f1t: 'Always-On Display', f1d: 'The time and what matters stay visible without raising your wrist.',
+      f2t: 'Sleep Tracking', f2d: 'See your sleep patterns each morning and understand your rest.',
+      f3t: 'Heart Rate', f3d: 'Keep an eye on your heart rate all day and during workouts.',
+      f4t: 'Battery', f4d: 'Designed to keep going for days between charges.',
+      f5t: 'Water Resistant', f5d: 'Hand washing, rain or sweat — keep it on with confidence.',
+      f6t: 'Notifications', f6d: 'Messages and reminders from your phone, right on your wrist.',
+      kDisplay: 'Display', kStages: 'Sleep stages', kSensor: 'Sensor', kBattery: 'Battery life', kRating: 'Rating', kCompat: 'Compatibility',
+      kMaterial: 'Material', kSupport: 'Support', kModes: 'Modes', kSize: 'Size', kType: 'Type', kResolution: 'Resolution',
+      kCaseMaterial: 'Case material', kDimensions: 'Dimensions', kWeight: 'Weight', kBandMaterial: 'Band material', kColors: 'Colours',
+      kButton: 'Side button', kOtherSensors: 'Other sensors', kCharger: 'Charger', kWarranty: 'Warranty', kPrice: 'Price',
+      closerKicker: 'Design', closerTitle: 'Take a closer look.', closerAlt: 'Orbit S in Graphite seen from the side',
+      c1t: 'Display', c1d: 'Always-On Display.', c2t: 'Sensor', c2d: 'Heart rate, on the underside of the case.',
+      c3t: 'Button', c3d: 'Side button for quick navigation.', c4t: 'Band',
+      healthKicker: 'Health', healthTitle: 'Know your body, every day.',
+      h1t: 'Heart rate, all day long.', h1d: 'Check your heart rate any time and see how it changes as you move.',
+      h2t: 'Sleep you understand better.', h2d: 'Wear it to bed, then see a summary of your night in the morning.',
+      silverAlt: 'Orbit S in Silver Mist', oliveAlt: 'Orbit S in Olive',
+      fitKicker: 'Fitness', fitTitle: 'Every move counts.', fitLede: 'Your daily activity metrics at a glance.',
+      m1: 'Steps', m2: 'Distance', m3: 'Active calories', m4: 'Active minutes', m5: 'Workout modes', m6: 'Workout heart rate',
+      batKicker: 'Battery & Performance', batTitle: 'Lasts long. Charges fast.',
+      s1: 'Battery life, typical use', s2: 'With Always-On Display', s3: 'Time to full charge',
+      batNote: 'Figures will be updated after official testing.',
+      conKicker: 'Connectivity', conTitle: 'Stay connected without reaching for your phone.',
+      k1t: 'Notifications', k1d: 'Messages and apps at a glance.', k2t: 'Calls', k2d: 'See who is calling.',
+      k3t: 'Music', k3d: 'Control your music from your wrist.', k4t: 'Find Phone', k4d: 'Ring your phone when it goes missing.',
+      safeKicker: 'Safety', safeTitle: 'Help, when you need it.',
+      sf1t: 'Emergency call', sf1d: 'Reach help directly from the watch.',
+      sf2t: 'Emergency contacts', sf2d: 'Keep your closest people one tap away.',
+      sf3t: 'Share location', sf3d: 'Send your location to emergency contacts.',
+      safeNote: 'Availability of safety features is still being verified.',
+      specTitle: 'Specs', gDisplay: 'Display', gCase: 'Case & Band', gHealth: 'Health & Sensors', gBattery: 'Battery',
+      gConnect: 'Connectivity & Durability', gPrice: 'Price',
+      ctaTitle: 'Time for Orbit.', ctaSub: 'Pick your colour. Orbit S comes in Graphite, Silver Mist and Olive.',
+      disclaimer: 'Specs marked TBD are awaiting confirmation. Product images are for illustration.',
+      rights: 'All rights reserved.', privacy: 'Privacy', terms: 'Terms', support: 'Support',
+      yes: 'Yes', no: 'No', u_days: 'days', u_min: 'min', u_inch: 'in', u_g: 'g'
     }
   };
-  const PRICES = { id: ['Rp 3.299.000', 'Rp 3.299.000', 'Rp 3.499.000'], en: ['Rp 3,299,000', 'Rp 3,299,000', 'Rp 3,499,000'] };
-  const KEY = 'orbit-lang';
-  const store = {
-    get() { try { return localStorage.getItem(KEY); } catch (e) { return null; } },
-    set(v) { try { localStorage.setItem(KEY, v); } catch (e) { /* storage unavailable */ } }
-  };
 
-  function setLang(lang) {
-    const d = DICT[lang] || DICT.id;
+  const TINTS = ['silver', 'graphite', 'olive'];
+  const SWATCH = { silver: '#b8b9bb', graphite: '#2a2a2c', olive: '#5b6340' };
+  const order = ['silver', 'graphite', 'olive']; // tint shown in [left, centre, right] slot
+  let lang = 'id';
+  let picked = null;
+  const pickerLabel = document.querySelector('.picker-label');
+
+  /* ---------- SPEC + i18n rendering ---------- */
+  const get = path => path.split('.').reduce((o, k) => (o == null ? o : o[k]), SPEC);
+  const isTBD = v => v == null || v === 'TBD';
+  function fmt(v, unit) {
+    const d = DICT[lang];
+    if (isTBD(v)) return 'TBD';
+    if (v === true) return d.yes;
+    if (v === false) return d.no;
+    if (typeof v === 'object') v = v[lang] ?? v.id;
+    if (typeof v === 'number') v = v.toLocaleString(lang === 'id' ? 'id-ID' : 'en-US');
+    return unit ? `${v} ${d['u_' + unit]}` : String(v);
+  }
+  function fillSpec(el, path) {
+    const v = path === 'colorsList' ? TINTS.map(t => fmt(SPEC.colors[t])).join(', ') : get(path);
+    el.textContent = fmt(v, el.dataset.unit);
+    el.classList.toggle('tbd', isTBD(v));
+  }
+  function priceFor(t) { const v = SPEC.price[t]; return { text: fmt(v), tbd: isTBD(v) }; }
+  function renderVariants() {
+    document.querySelectorAll('.variant').forEach(li => {
+      const t = order[+li.dataset.slot];
+      li.querySelector('.swatch').style.background = SWATCH[t];
+      li.querySelector('.v-name').textContent = fmt(SPEC.colors[t]);
+      const p = priceFor(t), pe = li.querySelector('.v-price');
+      pe.textContent = p.text; pe.classList.toggle('tbd', p.tbd);
+      li.querySelector('.v-buy').setAttribute('aria-label', `${DICT[lang].buy} Orbit S ${fmt(SPEC.colors[t])}`);
+      const sh = li.querySelector('.slot-head'), ss = li.querySelector('.slot-static img');
+      if (sh) sh.src = `assets/orbit-head-${t}.webp`;
+      if (ss) ss.src = `assets/orbit-strap-${t}.webp`;
+    });
+    document.querySelectorAll('.picker button').forEach(b => {
+      const on = b.dataset.tint === order[1];
+      b.setAttribute('aria-checked', String(on));
+      b.tabIndex = on ? 0 : -1;
+      b.querySelector('[data-name]').textContent = fmt(SPEC.colors[b.dataset.tint]);
+    });
+  }
+  function setLang(l) {
+    lang = DICT[l] ? l : 'id';
+    const d = DICT[lang];
     document.documentElement.lang = lang;
     document.title = d.title;
-    document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.dataset.i18n; if (d[k]) el.textContent = d[k]; });
-    document.querySelectorAll('[data-i18n-alt]').forEach(el => { const k = el.dataset.i18nAlt; if (d[k]) el.alt = d[k]; });
-    document.querySelectorAll('.variant .price').forEach((el, i) => { el.textContent = PRICES[lang][i]; });
+    document.querySelectorAll('[data-i18n]').forEach(el => { const v = d[el.dataset.i18n]; if (v) el.textContent = v; });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => { const v = d[el.dataset.i18nAria]; if (v) el.setAttribute('aria-label', v); });
+    document.querySelectorAll('[data-i18n-alt]').forEach(el => { const v = d[el.dataset.i18nAlt]; if (v) el.alt = v; });
+    document.querySelectorAll('[data-spec]').forEach(el => fillSpec(el, el.dataset.spec));
+    document.querySelectorAll('[data-count]').forEach(el => renderCount(el, el._done ? 1 : (motion ? 0 : 1)));
     document.querySelectorAll('.lang button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+    renderVariants();
+    renderPickLabel();
   }
-  document.querySelectorAll('.lang button').forEach(b => b.addEventListener('click', () => { setLang(b.dataset.lang); store.set(b.dataset.lang); }));
-  const saved = store.get();
-  setLang(saved === 'en' ? 'en' : 'id');
+  function renderCount(el, k) {
+    const v = get(el.dataset.count), unit = el.dataset.unit;
+    el.classList.toggle('is-tbd', isTBD(v) || typeof v !== 'number');
+    if (typeof v !== 'number') { el.textContent = fmt(v); return; }
+    const n = Math.round(v * k).toLocaleString(lang === 'id' ? 'id-ID' : 'en-US');
+    el.innerHTML = `${n}<span class="stat-unit">${DICT[lang]['u_' + unit] || ''}</span>`;
+  }
 
-  /* ---------- Motion ---------- */
+  const store = {
+    get() { try { return localStorage.getItem('orbit-lang'); } catch (e) { return null; } },
+    set(v) { try { localStorage.setItem('orbit-lang', v); } catch (e) { /* storage unavailable */ } }
+  };
   const root = document.documentElement;
-  if (!window.gsap || !window.ScrollTrigger) { root.classList.remove('motion'); return; } // readable static layout
-  gsap.registerPlugin(ScrollTrigger);
-  const mm = gsap.matchMedia();
+  const hasGsap = !!(window.gsap && window.ScrollTrigger);
+  if (!hasGsap) root.classList.remove('motion');
+  const motion = root.classList.contains('motion');
 
-  mm.add('(prefers-reduced-motion: no-preference)', () => {
-    root.classList.add('motion');
+  document.querySelectorAll('.lang button').forEach(b => b.addEventListener('click', () => { setLang(b.dataset.lang); store.set(lang); }));
+  setLang(store.get() === 'en' ? 'en' : 'id');
 
-    const stage = document.querySelector('.stage');
-    const pendulum = document.querySelector('.pendulum');
-    const watch = document.querySelector('.watch');
-    const strapWrap = document.querySelector('.strap-wrap');
-    const strap = document.querySelector('.strap');
-    const headWrap = document.querySelector('.head-wrap');
-    const centerImg = document.querySelector('.center-img');
-    const side = gsap.utils.toArray('.variant:not(.is-center)');
-    const metas = gsap.utils.toArray('.variant-meta');
+  /* ---------- Local nav ---------- */
+  const lnav = document.getElementById('lnav');
+  let lnavShown = false;
+  function updateNav(y) {
+    const show = y > window.innerHeight * .3;
+    if (show !== lnavShown) { lnavShown = show; lnav.classList.toggle('show', show); }
+  }
+  updateNav(window.scrollY);
+  window.addEventListener('scroll', () => updateNav(window.scrollY), { passive: true });
 
-    // Layout position (ignores transforms) relative to the stage
-    // .hang and the centre image are never transformed by GSAP, so their rects are stable;
-    // the head is measured by layout offsets inside the (untransformed-size) watch.
-    const hang = document.querySelector('.hang');
-    const geo = () => {
-      const a = hang.getBoundingClientRect(), c = centerImg.getBoundingClientRect();
-      const hx = headWrap.offsetLeft, hy = headWrap.offsetTop, hw = headWrap.offsetWidth, hh = headWrap.offsetHeight;
-      const oy = hy + hh * .573;                        // case centre inside the head crop
-      const headCx = a.left + hx + hw * .5, headCy = a.top + oy;
-      const tgtCx = c.left + c.width * .376, tgtCy = c.top + c.height * .43; // case centre in the 3/4 shot
-      return { dx: tgtCx - headCx, dy: tgtCy - headCy, scale: (c.width * .70) / (hw * .97), oy };
-    };
-    let g = geo();
-    const refreshGeo = () => { g = geo(); gsap.set(watch, { transformOrigin: `50% ${g.oy}px` }); };
-    refreshGeo();
-    ScrollTrigger.addEventListener('refreshInit', refreshGeo);
+  /* ---------- Highlights carousel ---------- */
+  const track = document.getElementById('hl-track');
+  const ctrls = document.querySelectorAll('.hl-ctrl .round');
+  function syncCtrls() {
+    const max = track.scrollWidth - track.clientWidth - 2;
+    ctrls[0].setAttribute('aria-disabled', String(track.scrollLeft <= 2));
+    ctrls[1].setAttribute('aria-disabled', String(track.scrollLeft >= max));
+  }
+  ctrls.forEach(b => b.addEventListener('click', () => {
+    if (b.getAttribute('aria-disabled') === 'true') return;
+    const card = track.querySelector('.hl-card');
+    const step = card.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 20);
+    track.scrollBy({ left: step * +b.dataset.dir, behavior: motion ? 'smooth' : 'auto' });
+  }));
+  track.addEventListener('scroll', syncCtrls, { passive: true });
+  window.addEventListener('resize', syncCtrls);
+  syncCtrls();
 
-    // 1. Pendulum sway (idle), paused once the story starts
-    const sway = gsap.fromTo(pendulum, { rotation: -2.4 }, { rotation: 2.4, duration: 2.6, ease: 'sine.inOut', yoyo: true, repeat: -1 });
-    const shadowSway = gsap.fromTo('.hang-shadow', { x: -10, scaleX: .92 }, { x: 10, scaleX: 1, duration: 2.6, ease: 'sine.inOut', yoyo: true, repeat: -1 });
-    let swaying = true;
-
-    // Initial states
-    gsap.set(side, { xPercent: 0, scale: .86 });
-    gsap.set(centerImg, { autoAlpha: 0 });
-    // opacity (not visibility) keeps the buttons in the tab order; pointer events gate clicks
-    gsap.set(side, { opacity: 0 });
-    gsap.set('.colors-head, .variant-meta', { opacity: 0, y: 24 });
-    const colors = document.querySelector('.colors');
-    colors.style.pointerEvents = 'none';
-    gsap.set(strap, { transformPerspective: 900 });
-
-    const tl = gsap.timeline({
-      defaults: { ease: 'none' },
-      scrollTrigger: {
-        trigger: '.story', start: 'top top', end: () => '+=' + Math.round(window.innerHeight * 3.2),
-        pin: true, scrub: .8, invalidateOnRefresh: true, anticipatePin: 1,
-        onUpdate(self) {
-          colors.style.pointerEvents = self.progress > .9 ? 'auto' : 'none';
-          const active = self.progress > .005;
-          if (active && swaying) { swaying = false; sway.pause(); shadowSway.pause(); gsap.to(pendulum, { rotation: 0, duration: .5, ease: 'power2.out' }); }
-          else if (!active && !swaying) { swaying = true; sway.restart(); shadowSway.restart(); }
-        }
-      }
+  /* ---------- Colour picker (works in every mode; renderer hook set below) ---------- */
+  let onTint = null;
+  function renderPickLabel() { if (picked) pickerLabel.textContent = `${DICT[lang].selected}: ${fmt(SPEC.colors[picked])}`; }
+  function pick(t) {
+    if (order[1] === t) return;
+    const from = order.indexOf(t);
+    const prev = order[1];
+    order[1] = t; order[from] = prev;
+    const metas = [document.querySelector(`.variant[data-slot="${from}"] .meta`), document.querySelector('.variant[data-slot="1"] .meta')];
+    metas.forEach(m => m.classList.add('fading'));
+    setTimeout(() => { renderVariants(); metas.forEach(m => m.classList.remove('fading')); }, motion ? 260 : 0);
+    picked = t; renderPickLabel();
+    if (onTint) onTint(from);
+  }
+  const pickBtns = [...document.querySelectorAll('.picker button')];
+  pickBtns.forEach(b => {
+    b.addEventListener('click', () => pick(b.dataset.tint));
+    b.addEventListener('keydown', e => {
+      const k = e.key, i = pickBtns.indexOf(b);
+      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(k)) return;
+      e.preventDefault();
+      const n = pickBtns[(i + (k === 'ArrowLeft' || k === 'ArrowUp' ? -1 : 1) + pickBtns.length) % pickBtns.length];
+      n.focus(); pick(n.dataset.tint);
     });
-
-    // 2. Roll-up: copy leaves, strap curls up into the case, watch glides to centre
-    tl.to('.hero-copy > *', { autoAlpha: 0, y: -40, duration: .45, stagger: .04, ease: 'power1.in' }, 0)
-      .to('.scroll-hint', { autoAlpha: 0, duration: .3 }, 0)
-      .to('.hang-shadow', { autoAlpha: 0, duration: .4 }, 0)
-      .to(strap, { rotationX: 62, duration: 1.4, ease: 'power1.in' }, .1)
-      .to(strapWrap, { scaleY: 0, duration: 1.6, ease: 'power2.in' }, .1)
-      .to(watch, { x: () => g.dx, y: () => g.dy, scale: () => g.scale, duration: 1.8, ease: 'power2.inOut' }, .1)
-      // 3. Front view hands over to the worn three-quarter shot
-      .to(headWrap, { autoAlpha: 0, rotationY: 28, transformPerspective: 900, duration: .5, ease: 'power1.inOut' }, 1.7)
-      .to(centerImg, { autoAlpha: 1, duration: .5, ease: 'power1.inOut' }, 1.7)
-      // 4. Duplicates slide out into a row
-      .to('.colors-head', { opacity: 1, y: 0, duration: .6, ease: 'power2.out' }, 2.2)
-      .to(side, { opacity: 1, scale: 1, xPercent: i => (i === 0 ? -1 : 1) * getComputedStyle(document.documentElement).getPropertyValue('--gap-pct'), duration: 1.1, ease: 'power3.out' }, 2.3)
-      .to(metas, { opacity: 1, y: 0, duration: .6, stagger: .08, ease: 'power2.out' }, 3.0)
-      .to({}, { duration: .5 });
-
-    // Final CTA reveal
-    gsap.utils.toArray('.cta .reveal').forEach((el, i) => {
-      gsap.fromTo(el, { autoAlpha: 0, y: 32 }, {
-        autoAlpha: 1, y: 0, duration: .9, delay: i * .06, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' }
-      });
-    });
-
-    return () => {
-      ScrollTrigger.removeEventListener('refreshInit', refreshGeo);
-      root.classList.remove('motion');
-    };
   });
 
-  // Keep keyboard focus visible inside the pinned stage: jump the scroll to the end of the story
-  document.querySelectorAll('.variant .btn').forEach(btn => btn.addEventListener('focus', () => {
-    const st = ScrollTrigger.getAll().find(s => s.pin);
-    if (st && st.progress < .98) window.scrollTo({ top: st.end, behavior: 'auto' });
-  }));
+  if (!motion) {
+    document.querySelectorAll('[data-count]').forEach(el => { el._done = true; renderCount(el, 1); });
+    return; // static, fully readable layout
+  }
+
+  /* =====================================================================
+     MOTION
+     ===================================================================== */
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Smooth scroll: Lenis drives the scroll, GSAP's ticker drives Lenis.
+  let lenis = null;
+  if (window.Lenis) {
+    lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
+    lenis.on('scroll', e => { ScrollTrigger.update(); updateNav(e.scroll); });
+    gsap.ticker.add(t => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+    document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+      const id = a.getAttribute('href');
+      if (id.length < 2) return;
+      const el = document.querySelector(id);
+      if (!el) return;
+      e.preventDefault();
+      lenis.scrollTo(el, { offset: id === '#overview' ? 0 : -52, duration: 1.2 });
+      el.setAttribute('tabindex', '-1'); el.focus({ preventScroll: true });
+    }));
+  }
+
+  /* ---------- Watch geometry (source-pixel units of the cropped photos) ---------- */
+  const L = 881;          // strap length
+  const HEAD = 503;       // head height (lug + case)
+  const TW = 360;         // texture width
+  const THICK = 9;        // strap thickness
+  const RIN = THICK * 3;  // innermost coil radius (~3 × thickness)
+  const K = THICK / (2 * Math.PI);
+  const phiOf = u => (-RIN + Math.sqrt(RIN * RIN + 2 * K * u)) / K;  // spiral angle for arc length u
+  const routOf = p => RIN + K * phiOf(L - p);
+  let P_END = 60; for (let i = 0; i < 30; i++) P_END = routOf(P_END) + 2;   // coil rests on the lug
+  const ROLL_TOP = P_END + routOf(P_END);          // top of the finished coil (local y)
+  const ROLLED_H = ROLL_TOP + HEAD;                // rolled watch height
+  const ROLLED_CY = (ROLL_TOP - HEAD) / 2;         // its centre (local y, lug = 0)
+  const pAt = r => L - r * (L - P_END);
+
+  /* ---------- Shared animation state (GSAP tweens these numbers) ---------- */
+  const S = { roll: 0, move: 0, yaw: 0, e0: 0, e1: 0, amp: 0 };
+  const stage = document.querySelector('.stage');
+  const slots = [...document.querySelectorAll('.slot')];
+  const shadows = [...document.querySelectorAll('.shadow')];
+  let W = 0, H = 0, hero = null, ends = [], floors = [], heroFloor = 0, dirty = true, visible = true;
+
+  function measure() {
+    W = stage.clientWidth; H = stage.clientHeight;
+    const mob = W < 760;
+    let s = (mob ? .74 : 1.04) * H / (L + HEAD);
+    s = Math.min(s, (mob ? .5 : .3) * W / TW);   // keep the case a sensible width
+    hero = { x: mob ? W / 2 : W * .63, y: mob ? -.15 * H : -.12 * H, s };
+    heroFloor = hero.y + (L + HEAD) * s + Math.max(14, H * .035);
+    const sr = stage.getBoundingClientRect();
+    ends = slots.map(el => {
+      const r = el.getBoundingClientRect();
+      const sc = r.height / ROLLED_H;
+      const cy = r.top - sr.top + r.height / 2;
+      return { x: r.left - sr.left + r.width / 2, y: cy + (ROLLED_CY - L) * sc, s: sc, cy };
+    });
+    floors = slots.map(el => el.getBoundingClientRect().bottom - sr.top + 8);
+    dirty = true;
+  }
+
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp01 = v => Math.min(1, Math.max(0, v));
+  // Pose of each watch: pivot (top of strap) in stage px, scale, sway angle (deg), roll p, yaw, z
+  function poses(time) {
+    const w = 2 * Math.PI / 3;  // ~3 s period
+    const ang = S.amp * Math.sin(w * time);
+    const wob = S.amp * (.22 * Math.sin(w * time - 1.1) + .05 * Math.sin(2 * w * time));
+    const c = ends[1];
+    const main = {
+      x: lerp(hero.x, c.x, S.move), y: lerp(hero.y, c.y, S.move), s: lerp(hero.s, c.s, S.move),
+      ang, wob, p: pAt(S.roll), yaw: S.yaw, z: 0, vis: 1,
+      floor: lerp(heroFloor, floors[1], S.move)
+    };
+    const copy = (i, e) => {
+      const d = ends[i], s0 = c.s * .9;
+      const cy = lerp(c.cy, d.cy, e), s = lerp(s0, d.s, e);
+      return { x: lerp(c.x, d.x, e), y: cy + (ROLLED_CY - L) * s, s, ang: 0, wob: 0, p: P_END, yaw: lerp(.3, .14, e), z: lerp(-260, 0, e), vis: e > .002 ? 1 : 0, floor: floors[i], e };
+    };
+    return [copy(0, S.e0), main, copy(2, S.e1)];
+  }
+  function drawShadows(ps) {
+    ps.forEach((q, i) => {
+      const len = (L + HEAD) * q.s;
+      const fx = q.x + Math.sin(q.ang * Math.PI / 180) * len;   // foot follows the sway
+      const fy = q.y + Math.cos(q.ang * Math.PI / 180) * len;
+      const gap = Math.max(0, q.floor - fy);
+      const w = TW * q.s * .92 * (1 + gap / H * 1.4);
+      const k = w / 100;
+      const op = (.26 * (1 - Math.min(1, gap / (H * .5))) + .05) * (i === 1 ? 1 : clamp01(q.e * 1.5));
+      shadows[i].style.transform = `translate3d(${fx - w / 2}px, ${q.floor - 12 * k * .45}px, 0) scale(${k}, ${k * .45})`;
+      shadows[i].style.opacity = op.toFixed(3);
+    });
+  }
+
+  /* ---------- DOM renderer: first paint + no-WebGL fallback (16 chained slices) ---------- */
+  const SLICES = 16, SH = L / SLICES;
+  const dws = document.querySelector('.dws');
+  function buildDomWatch(t) {
+    const el = document.createElement('div'); el.className = 'dw';
+    const strap = document.createElement('div'); strap.className = 'dw-strap';
+    let parent = strap; const slices = [];
+    for (let i = 0; i < SLICES; i++) {   // i = 0 sits on the lug, chained upward
+      const sl = document.createElement('div'); sl.className = 'dw-slice';
+      sl.style.backgroundImage = `url(assets/orbit-strap-${t}.webp)`;
+      sl.style.backgroundPosition = `0 ${-(L - (i + 1) * SH) + 1}px`;
+      parent.appendChild(sl); parent = sl; slices.push(sl);
+    }
+    const head = document.createElement('div'); head.className = 'dw-head';
+    head.innerHTML = `<img src="assets/orbit-head-${t}.webp" width="360" height="503" alt="">`;
+    el.append(strap, head);
+    dws.appendChild(el);
+    return { el, slices, head, tint: t };
+  }
+  function domRoll(w, p) {
+    const step = SH / (RIN + THICK * 1.5) * 180 / Math.PI;   // bend per slice once rolled
+    w.slices.forEach((sl, i) => {
+      const k = clamp01((i * SH - p) / SH + 1);               // joint at the bottom of slice i
+      sl.style.transform = k ? `rotateX(${(-step * k).toFixed(2)}deg)` : '';
+    });
+  }
+  function domTint(w, t) {
+    w.slices.forEach(sl => { sl.style.backgroundImage = `url(assets/orbit-strap-${t}.webp)`; });
+    const old = w.head.querySelector('img');
+    const img = new Image(); img.src = `assets/orbit-head-${t}.webp`; img.alt = ''; img.style.opacity = '0';
+    w.head.appendChild(img);
+    img.decode().catch(() => {}).then(() => { requestAnimationFrame(() => { img.style.opacity = '1'; old.style.opacity = '0'; setTimeout(() => old.remove(), 650); }); });
+  }
+  const domW = [buildDomWatch('silver'), buildDomWatch('graphite'), buildDomWatch('olive')];
+  dws.insertBefore(domW[1].el, null);
+  function drawDom(ps) {
+    ps.forEach((q, i) => {
+      const w = domW[i];
+      w.el.style.transform = `translate3d(${q.x - TW / 2}px, ${q.y}px, 0) rotate(${(-q.ang).toFixed(3)}deg) scale(${q.s})`;
+      w.el.style.opacity = q.vis;
+      w.el.style.zIndex = i === 1 ? 2 : 1;
+      w.head.style.transform = q.wob ? `rotate(${(-q.wob).toFixed(3)}deg)` : '';
+      if (w._p !== q.p) { domRoll(w, q.p); w._p = q.p; }
+    });
+  }
+
+  /* ---------- WebGL renderer (three.js): strap curls around a spiral in the vertex shader ---------- */
+  let gl = null;
+  const VERT = `
+    uniform float uP, uL, uRin, uK;
+    varying vec2 vUv; varying vec3 vN; varying float vAO; varying float vCurl;
+    float phiOf(float u){ return (-uRin + sqrt(uRin*uRin + 2.0*uK*u)) / uK; }
+    void main(){
+      vUv = uv; vec3 p = position; vec3 n = vec3(0.0, 0.0, 1.0); vAO = 0.0; vCurl = 0.0;
+      if (p.y > uP) {
+        float Phi = phiOf(uL - uP);          // total angle wound so far
+        float ph  = phiOf(uL - p.y);         // angle from the free end
+        float rOut = uRin + uK*Phi;
+        float r = uRin + uK*ph;
+        float th = Phi - ph;                 // angle travelled from the roll point
+        p.y = uP + r*sin(th);
+        p.z = rOut - r*cos(th);
+        n = vec3(0.0, -sin(th), cos(th));
+        vAO = clamp((rOut - r) / max(rOut - uRin, 1.0), 0.0, 1.0);
+        vCurl = smoothstep(0.0, 0.25, th);
+      }
+      vN = normalize(normalMatrix * n);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+    }`;
+  const FRAG_STRAP = `
+    uniform sampler2D uA, uB; uniform float uMix;
+    varying vec2 vUv; varying vec3 vN; varying float vAO; varying float vCurl;
+    void main(){
+      vec4 c = mix(texture2D(uA, vUv), texture2D(uB, vUv), uMix);
+      if (c.a < 0.02) discard;
+      vec3 n = normalize(vN); if (!gl_FrontFacing) n = -n;
+      vec3 l = normalize(vec3(-0.25, 0.65, 1.0));
+      float ndl = max(dot(n, l), 0.0);
+      float diff = (0.42 + 0.58*ndl) / (0.42 + 0.58*l.z);
+      vec3 h = normalize(l + vec3(0.0, 0.0, 1.0));
+      float spec = pow(max(dot(n, h), 0.0), 36.0) * 0.22 * vCurl;
+      float rim = pow(1.0 - abs(n.z), 3.0) * 0.35 * vCurl;     // darken grazing edges of the coil
+      vec3 col = c.rgb * mix(1.0, diff, max(vCurl, 0.35)) * (1.0 - 0.5*vAO) * (1.0 - rim) + spec;
+      gl_FragColor = vec4(col, c.a);
+    }`;
+  const VERT_HEAD = `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+  const FRAG_HEAD = `
+    uniform sampler2D uA, uB; uniform float uMix; varying vec2 vUv;
+    void main(){ vec4 c = mix(texture2D(uA, vUv), texture2D(uB, vUv), uMix); if (c.a < 0.02) discard; gl_FragColor = c; }`;
+
+  async function initGL() {
+    const canvas = document.querySelector('.gl');
+    const probe = document.createElement('canvas');
+    if (!(probe.getContext('webgl2') || probe.getContext('webgl'))) throw new Error('no webgl');
+    const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = THREE.LinearSRGBColorSpace;   // textures are shown 1:1
+    renderer.setClearColor(0x000000, 0);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(30, 1, 10, 20000);
+    const loader = new THREE.TextureLoader();
+    const load = src => new Promise((res, rej) => loader.load(src, t => {
+      t.colorSpace = THREE.NoColorSpace; t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      t.minFilter = THREE.LinearMipmapLinearFilter; res(t);
+    }, undefined, rej));
+    const tex = {};
+    await Promise.all(TINTS.flatMap(t => [
+      load(`assets/orbit-strap-${t}.webp`).then(x => { (tex[t] ||= {}).strap = x; }),
+      load(`assets/orbit-head-${t}.webp`).then(x => { (tex[t] ||= {}).head = x; })
+    ]));
+    const sGeo = new THREE.PlaneGeometry(TW, L, 1, 240); sGeo.translate(0, L / 2, 0);   // 240 segments along the length
+    const hGeo = new THREE.PlaneGeometry(TW, HEAD); hGeo.translate(0, -HEAD / 2, 0);
+    function makeWatch(t) {
+      const root = new THREE.Group();
+      const inner = new THREE.Group(); inner.position.y = -L; root.add(inner);
+      const sMat = new THREE.ShaderMaterial({
+        uniforms: { uA: { value: tex[t].strap }, uB: { value: tex[t].strap }, uMix: { value: 0 }, uP: { value: L }, uL: { value: L }, uRin: { value: RIN }, uK: { value: K } },
+        vertexShader: VERT, fragmentShader: FRAG_STRAP, side: THREE.DoubleSide, alphaToCoverage: true
+      });
+      const hMat = new THREE.ShaderMaterial({
+        uniforms: { uA: { value: tex[t].head }, uB: { value: tex[t].head }, uMix: { value: 0 } },
+        vertexShader: VERT_HEAD, fragmentShader: FRAG_HEAD, alphaToCoverage: true
+      });
+      const strap = new THREE.Mesh(sGeo, sMat);
+      const headG = new THREE.Group(); headG.add(new THREE.Mesh(hGeo, hMat));
+      inner.add(strap, headG);
+      scene.add(root);
+      return { root, headG, sMat, hMat, tint: t };
+    }
+    const watches = order.map(makeWatch);
+    function resize() {
+      renderer.setSize(W, H, false);
+      camera.aspect = W / H;
+      camera.position.set(0, 0, (H / 2) / Math.tan(THREE.MathUtils.degToRad(15)));
+      camera.updateProjectionMatrix();
+    }
+    function draw(ps) {
+      ps.forEach((q, i) => {
+        const w = watches[i];
+        w.root.visible = !!q.vis;
+        w.root.position.set(q.x - W / 2, H / 2 - q.y, q.z);
+        w.root.scale.setScalar(q.s);
+        w.root.rotation.set(0, q.yaw, q.ang * Math.PI / 180);
+        w.headG.rotation.z = q.wob * Math.PI / 180;
+        w.sMat.uniforms.uP.value = q.p;
+      });
+      renderer.render(scene, camera);
+    }
+    function tint(w, t) {
+      [['sMat', 'strap'], ['hMat', 'head']].forEach(([m, part]) => {
+        const u = w[m].uniforms;
+        if (u.uMix.value > 0) { u.uA.value = u.uB.value; }
+        u.uB.value = tex[t][part]; u.uMix.value = 0;
+        gsap.to(u.uMix, { value: 1, duration: .7, ease: 'power2.inOut', onUpdate: () => { dirty = true; },
+          onComplete: () => { u.uA.value = u.uB.value; u.uMix.value = 0; dirty = true; } });
+      });
+      w.tint = t;
+    }
+    return { watches, resize, draw, tint, canvas };
+  }
+
+  /* ---------- Render loop: only while the stage is on screen and something moves ---------- */
+  let renderer = 'dom';
+  function frame() {
+    if (!visible || !hero) return;
+    if (S.amp < 0.0005 && !dirty) return;
+    const ps = poses(gsap.ticker.time);
+    if (renderer === 'gl') gl.draw(ps); else drawDom(ps);
+    drawShadows(ps);
+    dirty = false;
+  }
+  new IntersectionObserver(([en]) => { visible = en.isIntersecting; stage.classList.toggle('animating', visible); dirty = true; }).observe(stage);
+  gsap.ticker.add(frame);
+
+  onTint = from => {
+    const pairs = [[1, order[1]], [from, order[from]]];
+    pairs.forEach(([i, t]) => {
+      if (renderer === 'gl') gl.tint(gl.watches[i], t);
+      domTint(domW[i], t);
+    });
+    dirty = true;
+  };
+
+  /* ---------- Pendulum: damped settle on load, amplitude eased (never cut) on scroll ---------- */
+  gsap.fromTo(S, { amp: 8 }, { amp: 3, duration: 3.2, ease: 'power3.out' });
+  let swaying = true;
+  function swayFor(progress) {
+    const want = progress < .003;
+    if (want === swaying) return;
+    swaying = want;
+    gsap.to(S, { amp: want ? 3 : 0, duration: want ? 1.2 : .6, ease: want ? 'power2.inOut' : 'power2.out', overwrite: 'auto', onUpdate: () => { dirty = true; } });
+  }
+
+  /* ---------- Master timeline for the pinned story ---------- */
+  const colors = document.querySelector('.colors');
+  gsap.set('.colors-head', { opacity: 0, y: 40 });
+  gsap.set('.variant .meta', { opacity: 0, y: 40 });
+  colors.style.pointerEvents = 'none';
+
+  const tl = gsap.timeline({
+    defaults: { ease: 'none' },
+    onUpdate: () => { dirty = true; },
+    scrollTrigger: {
+      trigger: '.story', start: 'top top', end: () => '+=' + Math.round(window.innerHeight * 3.4),
+      pin: true, scrub: 1.2, anticipatePin: 1, invalidateOnRefresh: true,
+      onUpdate(self) {
+        swayFor(self.progress);
+        colors.style.pointerEvents = self.progress > .82 ? 'auto' : 'none';
+      }
+    }
+  });
+  tl.to('.hero-fade', { opacity: 0, y: -40, duration: .35 }, 0)
+    .to('.stage-top', { autoAlpha: 0, duration: .25 }, 0)
+    .to(S, { roll: 1, duration: 2.0 }, .05)
+    .to(S, { yaw: .5, duration: 1.0 }, .1)
+    .to(S, { yaw: .14, duration: 1.0 }, 1.1)   // settle at a slight three-quarter turn
+    .to(S, { move: 1, duration: 1.85 }, .2)
+    .to('.colors-head', { opacity: 1, y: 0, duration: .45 }, 1.95)
+    .to(S, { e0: 1, duration: .8, ease: 'back.out(1.5)' }, 2.2)
+    .to(S, { e1: 1, duration: .8, ease: 'back.out(1.5)' }, 2.34)
+    .to('.variant .meta', { opacity: 1, y: 0, duration: .45, stagger: .08 }, 2.8)
+    .to({}, { duration: .45 });
+
+  // Keyboard users tabbing into the colour row jump to the finished state so nothing is hidden.
+  colors.addEventListener('focusin', () => {
+    const st = tl.scrollTrigger;
+    if (st && st.progress < .97) { if (lenis) lenis.scrollTo(st.end, { immediate: true }); else window.scrollTo(0, st.end); }
+  });
+
+  /* ---------- Section reveals (opacity + 40px, staggered) ---------- */
+  const rv = gsap.utils.toArray('.rv');
+  gsap.set(rv, { opacity: 0, y: 40 });
+  ScrollTrigger.batch(rv, {
+    start: 'top 88%', once: true,
+    onEnter: batch => gsap.to(batch, {
+      opacity: 1, y: 0, duration: .9, ease: 'power3.out', stagger: .08,
+      onStart() { batch.forEach(el => { el.style.willChange = 'transform, opacity'; }); },
+      onComplete() { batch.forEach(el => { el.style.willChange = ''; }); }
+    })
+  });
+  gsap.utils.toArray('.callout .lead').forEach(el => {
+    gsap.fromTo(el, { scaleX: 0 }, { scaleX: 1, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: '.closer', start: 'top 70%', once: true } });
+  });
+
+  /* ---------- Count-up numbers (only numeric SPEC values animate) ---------- */
+  document.querySelectorAll('[data-count]').forEach(el => {
+    ScrollTrigger.create({
+      trigger: el, start: 'top 85%', once: true,
+      onEnter: () => {
+        const o = { k: 0 };
+        if (typeof get(el.dataset.count) !== 'number') { el._done = true; renderCount(el, 1); return; }
+        gsap.to(o, { k: 1, duration: 1.6, ease: 'power2.out', onUpdate: () => renderCount(el, o.k), onComplete: () => { el._done = true; } });
+      }
+    });
+  });
+
+  /* ---------- Boot ---------- */
+  measure();
+  drawDom(poses(0)); drawShadows(poses(0));
+  ScrollTrigger.addEventListener('refresh', () => { measure(); if (gl) gl.resize(); });
+  window.addEventListener('load', () => ScrollTrigger.refresh());
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
+
+  initGL().then(g => {
+    gl = g; measure(); gl.resize();
+    gl.draw(poses(gsap.ticker.time));
+    renderer = 'gl';
+    requestAnimationFrame(() => { gl.canvas.classList.add('ready'); setTimeout(() => dws.classList.add('hidden'), 340); });
+    dirty = true;
+  }).catch(err => {
+    // No WebGL (or three.js unavailable): the 16-slice DOM strap keeps rolling.
+    renderer = 'dom'; dirty = true;
+    if (window.console) console.info('[orbit] WebGL unavailable, using DOM fallback:', err && err.message);
+  });
 })();
 </script>
 </body>
