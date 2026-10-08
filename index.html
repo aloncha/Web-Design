@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit S</title>
+<meta name="description" content="Orbit S — Semua yang penting, tepat di pergelangan.">
+<meta name="theme-color" content="#ffffff">
+<script>try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('motion')}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/orbit-strap.webp">
+<link rel="preload" as="image" href="assets/orbit-head.webp">
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1d1d1f;
+    --muted: #6e6e73;
+    --graphite: #3a3a3c;
+    --graphite-hover: #1d1d1f;
+    --line: #e8e8ed;
+    --surface: #f5f5f7;
+    --ring: #0071e3;
+    --shadow: rgba(0, 0, 0, .16);
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    --gutter: clamp(20px, 5vw, 72px);
+    /* hanging watch geometry */
+    --watch-h: 104svh;
+    --watch-top: -12svh;
+    --watch-x: 62%;
+    /* colour row geometry */
+    --card-w: min(24vw, 31svh);
+    --gap-pct: 118;
+    color-scheme: light;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: inherit; }
+
+  .skip {
+    position: absolute; left: 16px; top: -60px; z-index: 100;
+    padding: 10px 16px; border-radius: 999px;
+    background: var(--fg); color: #fff; text-decoration: none; font-weight: 500;
+    transition: transform .2s var(--ease);
+  }
+  .skip:focus { transform: translateY(76px); }
+  :focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; border-radius: 8px; }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    position: fixed; inset: 0 0 auto; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 52px; padding: 0 var(--gutter);
+    background: rgba(255, 255, 255, .78);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, .06);
+  }
+  .brand {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-weight: 600; font-size: 17px; letter-spacing: -.01em; text-decoration: none;
+  }
+  .brand svg { width: 20px; height: 20px; }
+  .nav-right { display: flex; align-items: center; gap: 8px; }
+  .lang {
+    display: inline-flex; padding: 3px; border-radius: 999px; background: var(--surface);
+  }
+  .lang button {
+    min-width: 44px; min-height: 32px; padding: 0 10px;
+    border: 0; border-radius: 999px; background: transparent;
+    font: inherit; font-size: 13px; font-weight: 500; color: var(--muted);
+    cursor: pointer; touch-action: manipulation;
+    transition: background-color .2s var(--ease), color .2s var(--ease);
+  }
+  .lang button[aria-pressed="true"] { background: #fff; color: var(--fg); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  .nav-buy { min-height: 32px; padding: 0 16px; font-size: 13px; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    min-height: 44px; padding: 0 22px; border-radius: 999px;
+    background: var(--graphite); color: #fff;
+    font-weight: 500; font-size: 15px; text-decoration: none; white-space: nowrap;
+    cursor: pointer; touch-action: manipulation;
+    transition: background-color .2s var(--ease), transform .2s var(--ease);
+  }
+  .btn:hover { background: var(--graphite-hover); }
+  .btn:active { transform: scale(.97); }
+  .btn-lg { min-height: 56px; padding: 0 34px; font-size: 17px; }
+
+  /* ---------- Story stage ---------- */
+  .story { position: relative; }
+  .stage {
+    position: relative; height: 100svh; min-height: 560px; overflow: hidden;
+    background: var(--bg);
+  }
+
+  .hero-copy {
+    position: absolute; z-index: 3;
+    left: var(--gutter); top: 50%; transform: translateY(-50%);
+    max-width: 34vw;
+  }
+  .eyebrow {
+    margin: 0 0 12px; font-size: 15px; font-weight: 500; color: var(--muted); letter-spacing: .01em;
+  }
+  .hero-title {
+    margin: 0; font-size: clamp(64px, 11vw, 168px); line-height: .92;
+    font-weight: 700; letter-spacing: -.055em;
+  }
+  .hero-tag {
+    margin: 22px 0 0; max-width: 18ch;
+    font-size: clamp(21px, 2.2vw, 32px); line-height: 1.18; font-weight: 500; letter-spacing: -.02em;
+    color: var(--graphite);
+    text-wrap: balance;
+  }
+
+  .scroll-hint {
+    position: absolute; z-index: 3; left: var(--gutter); bottom: 28px;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+    font-size: 12px; color: var(--muted); letter-spacing: .04em;
+  }
+  .scroll-hint span {
+    width: 1px; height: 34px; background: linear-gradient(var(--muted), transparent);
+    transform-origin: top; animation: hint 2.2s var(--ease) infinite;
+  }
+  @keyframes hint { 0% { transform: scaleY(0); opacity: 1; } 70% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
+
+  /* hanging watch */
+  .hang {
+    position: absolute; z-index: 2;
+    left: var(--watch-x); top: var(--watch-top);
+    height: var(--watch-h);
+    aspect-ratio: 360 / 1384;
+    transform: translateX(-50%);
+  }
+  .pendulum { position: relative; width: 100%; height: 100%; transform-origin: 50% 0; will-change: transform; }
+  .watch { position: relative; width: 100%; height: 100%; will-change: transform; }
+  .strap-wrap {
+    position: absolute; left: 0; top: 0; width: 100%; height: calc(100% * 881 / 1384);
+    transform-origin: 50% 100%; perspective: 900px; will-change: transform;
+  }
+  .strap { width: 100%; height: 100%; transform-origin: 50% 100%; }
+  .head-wrap { position: absolute; left: 0; bottom: 0; width: 100%; height: calc(100% * 503 / 1384); }
+  .head { width: 100%; height: 100%; filter: drop-shadow(0 30px 40px var(--shadow)); }
+  /* soft floor shadow under the hanging watch */
+  .hang-shadow {
+    position: absolute; left: -30%; top: calc(100% + 3svh);
+    width: 160%; height: 28px;
+    background: radial-gradient(closest-side, rgba(0,0,0,.18), transparent);
+    filter: blur(6px); will-change: transform, opacity;
+  }
+
+  /* colours */
+  .colors {
+    position: absolute; inset: 0; z-index: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 76px var(--gutter) 32px;
+  }
+  .colors-head { text-align: center; margin-bottom: clamp(20px, 4svh, 48px); }
+  .section-title {
+    margin: 0; font-size: clamp(40px, 6vw, 88px); line-height: 1; font-weight: 700; letter-spacing: -.045em;
+    text-wrap: balance;
+  }
+  .section-sub { margin: 14px auto 0; max-width: 46ch; color: var(--muted); font-size: clamp(17px, 1.4vw, 21px); }
+
+  .variants { position: relative; width: var(--card-w); margin: 0; padding: 0; list-style: none; }
+  .variant { text-align: center; }
+  .variant:not(.is-center) { position: absolute; inset: 0; }
+  .variant figure { margin: 0; }
+  .variant img {
+    width: 100%; aspect-ratio: 910 / 1104; height: auto;
+    filter: drop-shadow(0 24px 32px rgba(0,0,0,.14));
+  }
+  .variant-meta { margin-top: clamp(10px, 2svh, 22px); }
+  .variant h3 { margin: 0; font-size: clamp(17px, 1.6vw, 24px); font-weight: 600; letter-spacing: -.02em; }
+  .price { margin: 2px 0 14px; color: var(--muted); font-size: clamp(14px, 1.1vw, 17px); font-variant-numeric: tabular-nums; }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }
+
+  /* ---------- Final CTA ---------- */
+  .cta {
+    padding: clamp(120px, 22svh, 220px) var(--gutter) clamp(96px, 16svh, 160px);
+    text-align: center;
+  }
+  .cta-title {
+    margin: 0 auto; max-width: 14ch;
+    font-size: clamp(48px, 8.5vw, 132px); line-height: .96; font-weight: 700; letter-spacing: -.055em;
+    text-wrap: balance;
+  }
+  .cta-sub { margin: 24px auto 40px; max-width: 40ch; color: var(--muted); font-size: clamp(17px, 1.5vw, 22px); }
+  .cta-price { display: block; margin-top: 16px; font-size: 14px; color: var(--muted); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 28px var(--gutter) 40px;
+    display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between;
+    font-size: 13px; color: var(--muted);
+  }
+  footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
+  footer a { text-decoration: none; }
+  footer a:hover { color: var(--fg); text-decoration: underline; }
+
+  .reveal { opacity: 0; transform: translateY(32px); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 760px) {
+    :root {
+      --watch-h: 76svh;
+      --watch-top: -14svh;
+      --watch-x: 50%;
+      --card-w: min(27vw, 26svh);
+      --gap-pct: 112;
+    }
+    .nav-buy { display: none; }
+    .hero-copy { left: var(--gutter); right: var(--gutter); top: auto; bottom: 64px; transform: none; max-width: none; text-align: center; }
+    .hero-tag { margin: 12px auto 0; }
+    .scroll-hint { display: none; }
+    .variant .btn { min-height: 44px; padding: 0 14px; font-size: 14px; }
+    .price { margin-bottom: 10px; }
+  }
+
+  /* ---------- No-motion / no-JS fallback: plain, readable flow ---------- */
+  html:not(.motion) .stage { height: auto; min-height: 0; overflow: visible; }
+  html:not(.motion) .hero-copy, html:not(.motion) .hang, html:not(.motion) .colors { position: relative; inset: auto; left: auto; top: auto; transform: none; }
+  html:not(.motion) .hero { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 24px 8vw; padding: 100px var(--gutter) 40px; }
+  html:not(.motion) .hero-copy { max-width: 560px; }
+  html:not(.motion) .hang { height: min(80svh, 720px); }
+  html:not(.motion) .scroll-hint { display: none; }
+  html:not(.motion) .colors { padding-top: 80px; }
+  html:not(.motion) .variants { width: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 260px)); gap: 48px; justify-content: center; }
+  html:not(.motion) .variant:not(.is-center) { position: static; }
+  html:not(.motion) .variant.is-center { order: -1; }
+  html:not(.motion) .reveal { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Langsung ke konten</a>
+
+<header class="nav">
+  <a class="brand" href="#top" aria-label="Orbit — beranda">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.25" stroke="currentColor" stroke-width="1.5"/><circle cx="18.5" cy="6.5" r="2.25" fill="currentColor"/></svg>
+    Orbit
+  </a>
+  <div class="nav-right">
+    <div class="lang" role="group" aria-label="Bahasa / Language">
+      <button type="button" data-lang="id" aria-pressed="true" lang="id">ID</button>
+      <button type="button" data-lang="en" aria-pressed="false" lang="en">EN</button>
+    </div>
+    <a class="btn nav-buy" href="#" data-i18n="buy">Beli</a>
+  </div>
+</header>
+
+<main id="main">
+  <section class="story" id="top" aria-label="Orbit S">
+    <div class="stage">
+      <div class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow" data-i18n="eyebrow">Baru</p>
+          <h1 class="hero-title">Orbit S</h1>
+          <p class="hero-tag" data-i18n="tagline">Semua yang penting, tepat di pergelangan.</p>
+        </div>
+
+        <div class="hang">
+          <div class="pendulum">
+            <div class="watch">
+              <div class="strap-wrap"><img class="strap" src="assets/orbit-strap.webp" width="360" height="881" alt="" aria-hidden="true"></div>
+              <div class="head-wrap"><img class="head" src="assets/orbit-head.webp" width="360" height="503" alt="Orbit S, warna Graphite, tergantung pada talinya" data-i18n-alt="heroAlt"></div>
+            </div>
+          </div>
+          <div class="hang-shadow" aria-hidden="true"></div>
+        </div>
+
+        <div class="scroll-hint" aria-hidden="true"><b data-i18n="scroll" style="font-weight:500">Gulir</b><span></span></div>
+      </div>
+
+      <div class="colors" id="colors" aria-labelledby="colors-title">
+        <div class="colors-head reveal">
+          <h2 class="section-title" id="colors-title" data-i18n="colorsTitle">Tiga warna. Satu Orbit.</h2>
+          <p class="section-sub" data-i18n="colorsSub">Aluminium dengan sentuhan akhir halus dan tali silikon lembut yang pas sepanjang hari.</p>
+        </div>
+        <ul class="variants">
+          <li class="variant" data-pos="-1">
+            <figure>
+              <img src="assets/orbit-silver.webp" width="910" height="1104" loading="lazy" decoding="async" alt="Orbit S warna Silver Mist dengan tali abu-abu" data-i18n-alt="silverAlt">
+              <figcaption class="variant-meta reveal">
+                <h3><span class="swatch" style="background:#b9b9bb" aria-hidden="true"></span>Silver Mist</h3>
+                <p class="price">Rp 3.299.000</p>
+                <a class="btn" href="#" data-i18n="buy" aria-describedby="buy-silver">Beli</a>
+                <span id="buy-silver" hidden>Orbit S Silver Mist</span>
+              </figcaption>
+            </figure>
+          </li>
+          <li class="variant is-center" data-pos="0">
+            <figure>
+              <img class="center-img" src="assets/orbit-midnight.webp" width="910" height="1104" decoding="async" alt="Orbit S warna Graphite dengan tali hitam" data-i18n-alt="graphiteAlt">
+              <figcaption class="variant-meta reveal">
+                <h3><span class="swatch" style="background:#1d1d1f" aria-hidden="true"></span>Graphite</h3>
+                <p class="price">Rp 3.299.000</p>
+                <a class="btn" href="#" data-i18n="buy" aria-describedby="buy-graphite">Beli</a>
+                <span id="buy-graphite" hidden>Orbit S Graphite</span>
+              </figcaption>
+            </figure>
+          </li>
+          <li class="variant" data-pos="1">
+            <figure>
+              <img src="assets/orbit-olive.webp" width="910" height="1104" loading="lazy" decoding="async" alt="Orbit S warna Olive dengan tali hijau zaitun" data-i18n-alt="oliveAlt">
+              <figcaption class="variant-meta reveal">
+                <h3><span class="swatch" style="background:#5b6340" aria-hidden="true"></span>Olive</h3>
+                <p class="price">Rp 3.499.000</p>
+                <a class="btn" href="#" data-i18n="buy" aria-describedby="buy-olive">Beli</a>
+                <span id="buy-olive" hidden>Orbit S Olive</span>
+              </figcaption>
+            </figure>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" aria-labelledby="cta-title">
+    <h2 class="cta-title reveal" id="cta-title" data-i18n="ctaTitle">Waktunya punya Orbit.</h2>
+    <p class="cta-sub reveal" data-i18n="ctaSub">Pilih warnamu, pakai hari ini. Gratis ongkir dan garansi resmi 1 tahun.</p>
+    <div class="reveal">
+      <a class="btn btn-lg" href="#" data-i18n="buyNow">Beli Orbit S</a>
+      <span class="cta-price" data-i18n="from">Mulai dari Rp 3.299.000</span>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>© 2026 Orbit. <span data-i18n="rights">Hak cipta dilindungi.</span></span>
+  <nav aria-label="Footer">
+    <a href="#" data-i18n="privacy">Privasi</a>
+    <a href="#" data-i18n="terms">Ketentuan</a>
+    <a href="#" data-i18n="support">Bantuan</a>
+  </nav>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(() => {
+  /* ---------- i18n ---------- */
+  const DICT = {
+    id: {
+      skip: 'Langsung ke konten', eyebrow: 'Baru', tagline: 'Semua yang penting, tepat di pergelangan.',
+      scroll: 'Gulir', buy: 'Beli', buyNow: 'Beli Orbit S',
+      colorsTitle: 'Tiga warna. Satu Orbit.',
+      colorsSub: 'Aluminium dengan sentuhan akhir halus dan tali silikon lembut yang pas sepanjang hari.',
+      ctaTitle: 'Waktunya punya Orbit.',
+      ctaSub: 'Pilih warnamu, pakai hari ini. Gratis ongkir dan garansi resmi 1 tahun.',
+      from: 'Mulai dari Rp 3.299.000', rights: 'Hak cipta dilindungi.',
+      privacy: 'Privasi', terms: 'Ketentuan', support: 'Bantuan',
+      heroAlt: 'Orbit S, warna Graphite, tergantung pada talinya',
+      silverAlt: 'Orbit S warna Silver Mist dengan tali abu-abu',
+      graphiteAlt: 'Orbit S warna Graphite dengan tali hitam',
+      oliveAlt: 'Orbit S warna Olive dengan tali hijau zaitun',
+      title: 'Orbit S — Semua yang penting, tepat di pergelangan.'
+    },
+    en: {
+      skip: 'Skip to content', eyebrow: 'New', tagline: 'Everything that matters, right on your wrist.',
+      scroll: 'Scroll', buy: 'Buy', buyNow: 'Buy Orbit S',
+      colorsTitle: 'Three colours. One Orbit.',
+      colorsSub: 'Finely finished aluminium and a soft silicone band that feels right all day.',
+      ctaTitle: 'Time for Orbit.',
+      ctaSub: 'Pick your colour, wear it today. Free shipping and a 1-year official warranty.',
+      from: 'From Rp 3,299,000', rights: 'All rights reserved.',
+      privacy: 'Privacy', terms: 'Terms', support: 'Support',
+      heroAlt: 'Orbit S in Graphite, hanging by its band',
+      silverAlt: 'Orbit S in Silver Mist with a grey band',
+      graphiteAlt: 'Orbit S in Graphite with a black band',
+      oliveAlt: 'Orbit S in Olive with an olive-green band',
+      title: 'Orbit S — Everything that matters, right on your wrist.'
+    }
+  };
+  const PRICES = { id: ['Rp 3.299.000', 'Rp 3.299.000', 'Rp 3.499.000'], en: ['Rp 3,299,000', 'Rp 3,299,000', 'Rp 3,499,000'] };
+  const KEY = 'orbit-lang';
+  const store = {
+    get() { try { return localStorage.getItem(KEY); } catch (e) { return null; } },
+    set(v) { try { localStorage.setItem(KEY, v); } catch (e) { /* storage unavailable */ } }
+  };
+
+  function setLang(lang) {
+    const d = DICT[lang] || DICT.id;
+    document.documentElement.lang = lang;
+    document.title = d.title;
+    document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.dataset.i18n; if (d[k]) el.textContent = d[k]; });
+    document.querySelectorAll('[data-i18n-alt]').forEach(el => { const k = el.dataset.i18nAlt; if (d[k]) el.alt = d[k]; });
+    document.querySelectorAll('.variant .price').forEach((el, i) => { el.textContent = PRICES[lang][i]; });
+    document.querySelectorAll('.lang button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+  }
+  document.querySelectorAll('.lang button').forEach(b => b.addEventListener('click', () => { setLang(b.dataset.lang); store.set(b.dataset.lang); }));
+  const saved = store.get();
+  setLang(saved === 'en' ? 'en' : 'id');
+
+  /* ---------- Motion ---------- */
+  const root = document.documentElement;
+  if (!window.gsap || !window.ScrollTrigger) { root.classList.remove('motion'); return; } // readable static layout
+  gsap.registerPlugin(ScrollTrigger);
+  const mm = gsap.matchMedia();
+
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    root.classList.add('motion');
+
+    const stage = document.querySelector('.stage');
+    const pendulum = document.querySelector('.pendulum');
+    const watch = document.querySelector('.watch');
+    const strapWrap = document.querySelector('.strap-wrap');
+    const strap = document.querySelector('.strap');
+    const headWrap = document.querySelector('.head-wrap');
+    const centerImg = document.querySelector('.center-img');
+    const side = gsap.utils.toArray('.variant:not(.is-center)');
+    const metas = gsap.utils.toArray('.variant-meta');
+
+    // Layout position (ignores transforms) relative to the stage
+    // .hang and the centre image are never transformed by GSAP, so their rects are stable;
+    // the head is measured by layout offsets inside the (untransformed-size) watch.
+    const hang = document.querySelector('.hang');
+    const geo = () => {
+      const a = hang.getBoundingClientRect(), c = centerImg.getBoundingClientRect();
+      const hx = headWrap.offsetLeft, hy = headWrap.offsetTop, hw = headWrap.offsetWidth, hh = headWrap.offsetHeight;
+      const oy = hy + hh * .573;                        // case centre inside the head crop
+      const headCx = a.left + hx + hw * .5, headCy = a.top + oy;
+      const tgtCx = c.left + c.width * .376, tgtCy = c.top + c.height * .43; // case centre in the 3/4 shot
+      return { dx: tgtCx - headCx, dy: tgtCy - headCy, scale: (c.width * .70) / (hw * .97), oy };
+    };
+    let g = geo();
+    const refreshGeo = () => { g = geo(); gsap.set(watch, { transformOrigin: `50% ${g.oy}px` }); };
+    refreshGeo();
+    ScrollTrigger.addEventListener('refreshInit', refreshGeo);
+
+    // 1. Pendulum sway (idle), paused once the story starts
+    const sway = gsap.fromTo(pendulum, { rotation: -2.4 }, { rotation: 2.4, duration: 2.6, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+    const shadowSway = gsap.fromTo('.hang-shadow', { x: -10, scaleX: .92 }, { x: 10, scaleX: 1, duration: 2.6, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+    let swaying = true;
+
+    // Initial states
+    gsap.set(side, { xPercent: 0, scale: .86 });
+    gsap.set(centerImg, { autoAlpha: 0 });
+    // opacity (not visibility) keeps the buttons in the tab order; pointer events gate clicks
+    gsap.set(side, { opacity: 0 });
+    gsap.set('.colors-head, .variant-meta', { opacity: 0, y: 24 });
+    const colors = document.querySelector('.colors');
+    colors.style.pointerEvents = 'none';
+    gsap.set(strap, { transformPerspective: 900 });
+
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: '.story', start: 'top top', end: () => '+=' + Math.round(window.innerHeight * 3.2),
+        pin: true, scrub: .8, invalidateOnRefresh: true, anticipatePin: 1,
+        onUpdate(self) {
+          colors.style.pointerEvents = self.progress > .9 ? 'auto' : 'none';
+          const active = self.progress > .005;
+          if (active && swaying) { swaying = false; sway.pause(); shadowSway.pause(); gsap.to(pendulum, { rotation: 0, duration: .5, ease: 'power2.out' }); }
+          else if (!active && !swaying) { swaying = true; sway.restart(); shadowSway.restart(); }
+        }
+      }
+    });
+
+    // 2. Roll-up: copy leaves, strap curls up into the case, watch glides to centre
+    tl.to('.hero-copy > *', { autoAlpha: 0, y: -40, duration: .45, stagger: .04, ease: 'power1.in' }, 0)
+      .to('.scroll-hint', { autoAlpha: 0, duration: .3 }, 0)
+      .to('.hang-shadow', { autoAlpha: 0, duration: .4 }, 0)
+      .to(strap, { rotationX: 62, duration: 1.4, ease: 'power1.in' }, .1)
+      .to(strapWrap, { scaleY: 0, duration: 1.6, ease: 'power2.in' }, .1)
+      .to(watch, { x: () => g.dx, y: () => g.dy, scale: () => g.scale, duration: 1.8, ease: 'power2.inOut' }, .1)
+      // 3. Front view hands over to the worn three-quarter shot
+      .to(headWrap, { autoAlpha: 0, rotationY: 28, transformPerspective: 900, duration: .5, ease: 'power1.inOut' }, 1.7)
+      .to(centerImg, { autoAlpha: 1, duration: .5, ease: 'power1.inOut' }, 1.7)
+      // 4. Duplicates slide out into a row
+      .to('.colors-head', { opacity: 1, y: 0, duration: .6, ease: 'power2.out' }, 2.2)
+      .to(side, { opacity: 1, scale: 1, xPercent: i => (i === 0 ? -1 : 1) * getComputedStyle(document.documentElement).getPropertyValue('--gap-pct'), duration: 1.1, ease: 'power3.out' }, 2.3)
+      .to(metas, { opacity: 1, y: 0, duration: .6, stagger: .08, ease: 'power2.out' }, 3.0)
+      .to({}, { duration: .5 });
+
+    // Final CTA reveal
+    gsap.utils.toArray('.cta .reveal').forEach((el, i) => {
+      gsap.fromTo(el, { autoAlpha: 0, y: 32 }, {
+        autoAlpha: 1, y: 0, duration: .9, delay: i * .06, ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' }
+      });
+    });
+
+    return () => {
+      ScrollTrigger.removeEventListener('refreshInit', refreshGeo);
+      root.classList.remove('motion');
+    };
+  });
+
+  // Keep keyboard focus visible inside the pinned stage: jump the scroll to the end of the story
+  document.querySelectorAll('.variant .btn').forEach(btn => btn.addEventListener('focus', () => {
+    const st = ScrollTrigger.getAll().find(s => s.pin);
+    if (st && st.progress < .98) window.scrollTo({ top: st.end, behavior: 'auto' });
+  }));
+})();
+</script>
+</body>
+</html>
