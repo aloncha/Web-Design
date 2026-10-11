@@ -1,0 +1,93 @@
+{
+ "scenes": [
+  {
+   "id": "hull",
+   "title": "Air laut masuk",
+   "sub": "Air laut masuk lewat <i>sea chest</i>, lubang di lambung kapal yang dilindungi saringan.",
+   "start": 0,
+   "dur": 5.58,
+   "voice": 0.35
+  },
+  {
+   "id": "suction",
+   "title": "Pipa isap",
+   "sub": "Lewat pipa isap, air mengalir ke pompa. Pompa harus terisi penuh air dulu, baru bisa bekerja.",
+   "start": 5.58,
+   "dur": 6.97,
+   "voice": 5.93
+  },
+  {
+   "id": "pump",
+   "title": "Pompa dari luar",
+   "sub": "Motor listrik di satu sisi, rumah spiral (<i>volute</i>) di sisi lain, dan poros di antaranya.",
+   "start": 12.55,
+   "dur": 6.38,
+   "voice": 12.9
+  },
+  {
+   "id": "bearing",
+   "title": "Di dalam <i>bearing</i>",
+   "sub": "<i>Bearing</i>, penopang poros di belakang <i>impeller</i>, bekerja seperti jalur bola: poros berputar halus, gesekannya kecil.",
+   "start": 18.93,
+   "dur": 9,
+   "voice": 19.28
+  },
+  {
+   "id": "drive",
+   "title": "Penggerak",
+   "sub": "Motor memutar poros, poros memutar <i>impeller</i>.",
+   "start": 27.93,
+   "dur": 3.68,
+   "voice": 28.28
+  },
+  {
+   "id": "impeller",
+   "title": "<i>Impeller</i>",
+   "sub": "<i>Impeller</i> (roda bersudu) seperti kipas: air ditarik di tengah, dilempar ke luar oleh gaya sentrifugal. Tekanan dan kecepatan naik.",
+   "start": 31.62,
+   "dur": 10.56,
+   "voice": 31.97
+  },
+  {
+   "id": "volute",
+   "title": "<i>Volute</i> dan pipa buang",
+   "sub": "Air masuk ke rumah spiral yang makin lebar, lalu keluar lewat pipa buang.",
+   "start": 42.18,
+   "dur": 5.38,
+   "voice": 42.53
+  },
+  {
+   "id": "cooler",
+   "title": "<i>Central cooler</i>",
+   "sub": "Penukar panas ini mirip radiator: air laut menyerap panas dari air tawar pendingin, yang tadi mengambil panas dari mesin induk.",
+   "start": 47.56,
+   "dur": 10,
+   "voice": 47.91
+  },
+  {
+   "id": "overboard",
+   "title": "Kembali ke laut",
+   "sub": "Air laut yang sudah hangat dibuang kembali ke laut.",
+   "start": 57.56,
+   "dur": 5,
+   "voice": 57.91
+  },
+  {
+   "id": "monitor",
+   "title": "Sensor dan monitoring",
+   "sub": "Sensor RPM membaca kecepatan putar poros. Datanya dikirim ke PLC, komputer kendali, lalu tampil di layar monitoring.",
+   "start": 62.56,
+   "dur": 10,
+   "voice": 62.91
+  },
+  {
+   "id": "summary",
+   "title": "Ringkasan",
+   "sub": "Air laut tidak menjadi bagian mesin. Ia hanya membawa panas dari sistem pendingin ke laut.",
+   "start": 72.56,
+   "dur": 6.83,
+   "voice": 72.91
+  }
+ ],
+ "total": 79.99
+}

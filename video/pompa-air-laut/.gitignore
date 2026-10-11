@@ -1,0 +1,4 @@
+node_modules
+shots/
+audio/raw*.wav
+render.log

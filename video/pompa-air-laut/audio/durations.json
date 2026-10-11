@@ -1,0 +1,46 @@
+[
+ {
+  "id": "hull",
+  "dur": 4.933188
+ },
+ {
+  "id": "suction",
+  "dur": 6.32
+ },
+ {
+  "id": "pump",
+  "dur": 5.730563
+ },
+ {
+  "id": "bearing",
+  "dur": 7.607813
+ },
+ {
+  "id": "drive",
+  "dur": 3.03325
+ },
+ {
+  "id": "impeller",
+  "dur": 9.909813
+ },
+ {
+  "id": "volute",
+  "dur": 4.734313
+ },
+ {
+  "id": "cooler",
+  "dur": 9.151813
+ },
+ {
+  "id": "overboard",
+  "dur": 3.062813
+ },
+ {
+  "id": "monitor",
+  "dur": 8.64425
+ },
+ {
+  "id": "summary",
+  "dur": 6.1835
+ }
+]
